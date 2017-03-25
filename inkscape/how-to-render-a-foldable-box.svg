@@ -13,10 +13,10 @@
    inkscape:version="0.91 r13725"
    version="1.1"
    id="svg57489"
-   viewBox="0 0 744.09448819 1052.3622047"
-   height="297mm"
-   width="210mm"
-   sodipodi:docname="foldable_box.svg"
+   viewBox="0 0 765 990"
+   height="11in"
+   width="8.5in"
+   sodipodi:docname="how-to-render-a-foldable-box.svg"
    inkscape:export-filename="/home/brentg/ftp_jail/burr_metal_working/foldable_box.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
@@ -30,7 +30,7 @@
      inkscape:current-layer="svg57489"
      inkscape:document-units="px"
      inkscape:cy="854.07318"
-     inkscape:cx="487.91738"
+     inkscape:cx="-6.0472111"
      inkscape:zoom="0.49497475"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -41,7 +41,8 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="false"
-     inkscape:object-paths="true" />
+     inkscape:object-paths="true"
+     units="in" />
   <defs
      id="defs57491">
     <marker
@@ -68,7 +69,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -78,10 +79,10 @@
      width="1325.4321"
      height="1328.8185"
      x="-250.57384"
-     y="-346.96048" />
+     y="-409.32269" />
   <g
      id="g62267"
-     transform="translate(-1678.0129,117.66355)">
+     transform="translate(-1678.0129,55.301345)">
     <image
        width="204"
        height="349"
@@ -262,23 +263,24 @@
   </g>
   <path
      style="fill:none;fill-rule:evenodd;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker55328)"
-     d="m 856.68306,-289.26297 c 50.52584,0 46.06774,36.29985 45.8902,77.46937 -0.17754,41.16952 -52.88814,67.15572 -130.57593,142.642897 C 694.30954,6.3364773 663.05205,47.82218 663.05205,161.31389"
+     d="m 856.68306,-351.62517 c 50.52584,0 46.06774,36.29985 45.8902,77.46937 -0.17754,41.16952 -52.88814,67.15572 -130.57593,142.64289 -77.68779,75.487183 -108.94528,116.972885 -108.94528,230.464595"
      id="path55741"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="czzc" />
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1" />
+     id="layer1"
+     transform="translate(0,-62.362205)" />
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      x="-33.736679"
-     y="-277.60776"
+     y="-339.96997"
      id="text55737"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan55739"
        x="-33.736679"
-       y="-277.60776">Menu -&gt; Extensions / Render / Foldable Box</tspan></text>
+       y="-339.96997">Menu -&gt; Extensions / Render / Foldable Box</tspan></text>
 </svg>
