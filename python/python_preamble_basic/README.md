@@ -3,6 +3,11 @@ python_preamble_basic
 
 [Parent README](../README.md)
 
+Files:
+
+- [non_module_python_script](non_module_python_script) -- The preamble wrapper that calls the .py script.
+- [non_module_python_script.py](non_module_python_script.py) -- The Python script.
+
 Basic Python script executed from a "preamble" Bash script. This
 serves multiple purposes:
 
