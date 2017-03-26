@@ -1,0 +1,172 @@
+#!/bin/bash
+# -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+
+VIRTUALENV_DIR="$HOME/python_virtualenv"
+
+usage () {
+cat <<EOF
+USAGE: $0 -e VIRTUALENV_DIR
+
+VIRTUALENV_DIR is the directory where to store the virtual env. It
+defaults to $VIRTUALENV_DIR.
+
+EOF
+}
+
+DO_QUIET=0
+while [ $# -gt 0 ]
+do
+  if [ "$1" = "-e" ]
+  then
+    VIRTUALENV_DIR="$2"
+    shift
+  elif [ "$1" = "-q" ]
+  then
+    DO_QUIET=1
+  elif [ "$1" = "-h" ]
+  then
+    usage
+    exit 0
+  else
+    echo "ERROR: Unrecognized option $1"
+    exit 1
+  fi
+  shift
+done
+
+
+if [ "$VIRTUALENV_DIR" = "" ]
+then
+  echo "ERROR: VIRTUALENV_DIR was not specified"
+  exit 1
+fi
+
+if [ -d $VIRTUALENV_DIR ]
+then
+  if [ "$DO_QUIET" != 1 ]
+  then
+    echo "VIRTUALENV_DIR at $VIRTUALENV_DIR already exists. Doing nothing."
+  fi
+  exit 0
+fi
+
+echo
+echo "Creating virtualenv at $VIRTUALENV_DIR ..."
+echo
+
+# ================================================================================
+# Create the virtual env:
+# ================================================================================
+
+#     Reference: https://virtualenv.pypa.io/en/stable/installation/ :
+#     
+#        To use locally from source:
+#        
+#        $ curl -O https://pypi.python.org/packages/source/v/virtualenv/virtualenv-X.X.tar.gz
+#        $ tar xvfz virtualenv-X.X.tar.gz
+#        $ cd virtualenv-X.X
+#        $ python virtualenv.py myVE
+#    
+
+#
+# Determine what the X.X part is dynamically:
+#
+
+tarball_url=$(curl https://pypi.python.org/pypi/virtualenv | sed -n '/href.*tar.gz/{ s%^.*<a href="\([^"]*\)">.*$%\1%gp; q; }' )
+if [ -z "$tarball_url" ]
+then
+  echo "ASSERTION FAILED: tarball_url cannot be determined."
+  exit 1
+fi
+echo "tarball_url==\"${tarball_url}\""
+
+tarball_base=$(echo "$tarball_url" | sed 's%^.*/\(virtualenv-[0-9.]*tar.gz\).*$%\1%g')
+echo "tarball_base==\"${tarball_base}\""
+if [ -z "$tarball_base" ]
+then
+  echo "ASSERTION FAILED: tarball_base cannot be determined."
+  exit 1
+fi
+
+#
+# Download it:
+#
+tarball_path=/tmp/$tarball_base
+if [ ! -f $tarball_path ]
+then
+  curl -o $tarball_path "$tarball_url"
+  if [ ! -f $tarball_path ]
+  then
+    echo "ERROR: Failed to download $tarball_path from $tarball_url"
+    exit 1
+  fi
+fi
+
+#
+# Extract it:
+#
+src_extract_dir=$(echo "$tarball_path" | sed 's%\.tar\.gz$%%g')
+echo "src_extract_dir==\"${src_extract_dir}\""
+if [ ! -d $src_extract_dir ]
+then
+  cd $(dirname $tarball_path)
+  tar xvfz $tarball_path
+  if [ ! -d $src_extract_dir ]
+  then
+    echo "ERROR: Failed to extract $tarball_base"
+    exit 1
+  fi
+fi
+
+# Cannot use system python, it is too old and ipython won't work with
+# it (jirashell from the jira package needs ipython) :
+#
+#    # Put the system python in front to avoid mixing in locally built pythons:
+#    export PATH=/usr/bin:$PATH
+#
+# So let's hope that the following finds a more recent python:
+new_python_bin_dir=""
+
+if [ -z "$PYTHON_LATEST" ]
+then
+  echo "ERROR: PYTHON_LATEST not set. Point it to the path to the newer python than exists on the system."
+  exit 1
+fi
+
+for potential_python in $PYTHON_LATEST /usr/bin/python
+do
+  if [ -e $potential_python ]
+  then
+    new_python_bin_dir=$(dirname $(readlink -f $potential_python))
+    if [ -n "$new_python_bin_dir" ]
+    then
+      break
+    fi
+  fi
+done
+
+if [ -z "$new_python_bin_dir" ]
+then
+  echo "ERROR: Cannot find a python installed in the network or on the system."
+  exit 1
+fi
+
+export PATH="$new_python_bin_dir:$PATH"
+
+#
+# Build the virtualenv
+#
+echo 
+echo Note: Creating virtualenv into $VIRTUALENV_DIR
+echo
+cd $src_extract_dir
+python virtualenv.py $VIRTUALENV_DIR
+
+
+# Reference for use:
+#   http://docs.python-guide.org/en/latest/dev/virtualenvs/
+#
+echo
+echo "Remember to activate it from the shell via:"
+echo "  source $VIRTUALENV_DIR/bin/activate"
+echo
