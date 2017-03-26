@@ -81,7 +81,7 @@ Example bash session:
 Emacs pdb usage
 ===============
 
-Open up the ../python_preamble_directory_relative_module/ directory in Emacs.
+Open up the [../python_preamble_directory_relative_module/](../python_preamble_directory_relative_module/) directory in Emacs.
 
 Execute:
 
