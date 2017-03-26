@@ -3,6 +3,9 @@ pdbwrapper
 
 [Parent README](../README.md)
 
+Rationale
+=========
+
 Before adding the [pdbwrapper](pdbwrapper) script, I had this
 awkwardness at the top of all of my non-module .py files:
 
@@ -32,11 +35,15 @@ option:
 If you forget and put in the `.py` on the filename, the
 [pdbwrapper](pdbwrapper) will error out.
 
-Unfortunately, the RHEL (Red Hat Enterprise Licensing) I work lack the
-/usr/bin/pdb executable. But it seems that, on Ubuntu, /usr/bin/pdb is
-the same as the pdb.py file in the Python distribution. So we hack around
-that bug by inject `-m pdb` into the command line when we invoke the
-script.
+Unfortunately, the RHEL (Red Hat Enterprise Licensing) I currently use
+lacks the `/usr/bin/pdb` executable (is that an oversight or
+intentional?). But it seems that, on Ubuntu, `/usr/bin/pdb` is the
+same as the `pdb.py` file in the Python distribution. So we hack
+around that bug by injecting `-m pdb` into the command line when we
+invoke the script.
+
+Emacs pdb bug(s)
+================
 
 Note: Emacs's pdb command (actually the code it calls which is
 `gud-common-init`) has a bug in that it splits only on double quotes
