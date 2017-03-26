@@ -120,8 +120,7 @@ def main():
     # not each line:
     #
     if False:
-        print 'Example: Reading stdout and stderr from a process ' + \
-            ' based upon http://stackoverflow.com/a/17698359/257924'
+        print 'Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924'
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdin=subprocess.PIPE,
@@ -137,8 +136,7 @@ def main():
     #   See http://stackoverflow.com/a/17698359/257924
     #
     if True:
-        print 'Example: Reading stdout and stderr from a process ' + \
-            'based upon http://stackoverflow.com/a/17698359/257924'
+        print 'Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924'
         # shell=True as otherwise "ls ..." raises exception of "no such file
         # or directory":
         p = subprocess.Popen(cmd,
@@ -160,8 +158,7 @@ def main():
                 print 'stderr_line=="{}"'.format(stderr_line)
         p.wait()  # wait for the subprocess to exit
 
-        print "Example: Simplified Reading combined stdout and stderr " + \
-            "from a process."
+        print "Example: Simplified Reading combined stdout and stderr from a process."
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdout=subprocess.PIPE,
@@ -183,8 +180,7 @@ def main():
     # Reading/writing from files and matching on regular expressions:
     # --------------------------------------------------------------------------------
 
-    print "Example: Reading a file and matching on regular expressions " + \
-        "and subgroups:"
+    print "Example: Reading a file and matching on regular expressions and subgroups:"
     in_file = "/etc/issue"
     with open(in_file, 'r') as f:
         for line in f:
@@ -194,7 +190,7 @@ def main():
                 release_num = m.group(1)
                 print "release_num == <{}>".format(release_num)
 
-    print "Example: reading a file and searching/replacing on a regular expression:"
+    print "Example: Reading a file and searching/replacing on a regular expression:"
     with open(in_file, 'r') as f:
         for line in f:
             line = line.rstrip()
