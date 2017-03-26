@@ -3,10 +3,15 @@ python_preamble_directory_relative_module
 
 [Parent README](../README.md)
 
-This demonstrates the following:
+Files:
+
+- [non_module_python_script_using_directory_relative_modules](non_module_python_script_using_directory_relative_modules) -- The preamble wrapper that calls the .py script.
+- [non_module_python_script_using_directory_relative_modules.py](non_module_python_script_using_directory_relative_modules.py) -- The Python script.
+
+The demonstrates the following:
 
 - Demonstrate the same things as given
-  in[python_preamble_basic](../python_preamble_basic/README.md)
+  in [python_preamble_basic](../python_preamble_basic/README.md)
   example.
 
 - Dynamically hack in to `sys.path` the directory for a module, and
