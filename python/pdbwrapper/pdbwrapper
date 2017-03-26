@@ -1,0 +1,10 @@
+#!/bin/bash
+# Use the preamble PYTHON_PREAMBLE_EXTRA_ARGS variable to inject the
+# options we need to run under the Python debugger:
+export PYTHON_PREAMBLE_EXTRA_ARGS='-m pdb'
+if [[ "$1" =~ .py$ ]]
+then
+  echo "ERROR: You must call this with the preamble wrapper for the .py file, not the .py file."
+  exit 1
+fi
+exec "$@"

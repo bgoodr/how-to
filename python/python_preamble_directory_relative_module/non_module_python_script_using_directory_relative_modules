@@ -1,0 +1,5 @@
+#!/bin/bash
+# Reuse the python_preamble_basic script using a relative path for
+# convenience in this example. You can choose to just copy it into
+# your real code:
+exec "$(dirname $0)/../python_preamble_basic/python_preamble_basic" "$0" "$@"

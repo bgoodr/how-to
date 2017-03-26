@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This preamble is kept separate from the .py file because it is
+# difficult to use the pdb debugger without it. See info inside
+# ../pdbwrapper/pdbwrapper for details.
+
+caller=$1
+shift
+
+#
+# We desire NOT to set PYTHONPATH here. We desire to let the .py file
+# resolve paths to the modules it depends upon. E.g., do NOT do this:
+#
+#    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
+#
+
+# Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
+# is empty/not-set by default):
+exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
