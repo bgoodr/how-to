@@ -179,8 +179,6 @@ def main():
         p.wait()  # wait for the subprocess to exit and set return code
         print "exit code: {}".format(p.returncode)
 
-        # See ./python/basic_util.py for run_process for the above.
-
     # --------------------------------------------------------------------------------
     # Reading/writing from files and matching on regular expressions:
     # --------------------------------------------------------------------------------
