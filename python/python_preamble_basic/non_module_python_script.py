@@ -227,8 +227,7 @@ def main():
     # --------------------------------------------------------------------------------
 
     try:
-        raise argparse.ArgumentTypeError(
-            '{} was not set in the environment.'.format("THE_ENV_VAR"))
+        raise argparse.ArgumentTypeError('{} was not set in the environment.'.format("THE_ENV_VAR"))
     except argparse.ArgumentTypeError, e:
         # raise Exception, "%s [%d]" % (e.strerror, e.errno)
         print "The exception {}".format(e)
