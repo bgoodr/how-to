@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+# Example Usage:
+#
+#    # Use a central virtualenv for all scripts located in various subdirectories:
+#    PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES="requests|requests import%20apiclient.discovery|google-api-python-client"
+#    . $HOME/bin/python_virtualenv_preamble_idempotent "$0" "$@"
+#
+# The above idempotently ensures that the packages specified by
+# PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES are in the virtual env (by
+# installing them into the virtual env), and then invokes the .py
+# script that depends upon those packages.
+#
+# The first string before the "|" can be constructed as a url-encoded
+# Python statement to import the package:
+#
+#     $ python
+#     Python 2.7.12 (default, Jul  1 2016, 15:12:24) 
+#     [GCC 5.4.0 20160609] on linux2
+#     Type "help", "copyright", "credits" or "license" for more information.
+#     >>> import urllib
+#     >>> urllib.quote("from selenium import webdriver")
+#     'from%20selenium%20import%20webdriver'
+#     >>> urllib.unquote(urllib.quote("from selenium import webdriver"))
+#     'from selenium import webdriver'
+#
+# This was done because some modules require complicated import
+# statements (e.g., the selenium module above is a good example of
+# that).
+
+# ================================================================================
+# Instead of having all wrapper scripts do the following:
+#
+#   # Generic forwarding stub for all .py scripts:
+#   exec "$(dirname $0)/python_virtualenv_preamble" "$0" "$@"
+#
+# have those wrapper scripts just source this script directly. This
+# allows us to maintain a central copy of of the preamble, while
+# having different wrapper scripts and their corresponding .py files
+# located in various subdirectories:
+# ================================================================================
+
+#
+# Verify that the virtualenv was created (TODO Just idemptently make it silently unless it fails)
+#
+if [ ! -d $HOME/python_virtualenv ]
+then
+  echo "ERROR: A virtualenv is required. Please set it up with python_virtualenv_setup."
+  exit 1
+fi
+
+#
+# Activate the virtualenv:
+#
+source $HOME/python_virtualenv/bin/activate
+
+pip_upgraded=0
+upgrade_pip_idempotently () {
+  #
+  # Upgrade pip dynamically, once:
+  #
+  if [ $pip_upgraded = 0 ]
+  then
+    pip_upgrade_output=$(pip install --upgrade pip 2>&1; echo EXIT_CODE $?)
+    exit_code=$(echo "$pip_upgrade_output" | sed -n 's%^EXIT_CODE \([0-9]*\)$%\1%gp')
+    if [ "$exit_code" != 0 ]
+    then
+      echo -e "ERROR: Could not upgrade pip:\n$pip_upgrade_output" | grep -v EXIT_CODE
+      exit 1
+    fi
+    pip_upgraded=1
+  fi
+}
+
+#
+# Detect and install required packages into that virtualenv:
+#
+for package_tuple in $PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES
+do
+  #
+  # Split on vertical bar to get the two different packages names:
+  #
+  eval $(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; pip_package=\"%s\"\n", $1, $2); }')
+  if [ -z "$pip_package" -o -z "$import_package_statement" ]
+  then
+    echo "ERROR: PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES should be of the form \"import_package_statement1|pip_package1 import_package_statement2|pip_package2 ...\""
+    exit 1
+  fi
+
+  exec_statement="import urllib; script = urllib.unquote(\"$import_package_statement\"); exec(script)"
+  if python -c "$exec_statement"
+  then
+    :
+  else
+    upgrade_pip_idempotently
+    pip install --upgrade $pip_package
+    if python -c "$exec_statement"
+    then
+      :
+    else
+      echo "ERROR: Could not install python package $package"
+      exit 1
+    fi
+  fi
+done
+
+#
+# Invoke the script:
+#
+caller=$1
+shift
+
+#
+# We desire NOT to set PYTHONPATH here. We desire to let the .py file
+# resolve paths to the modules it depends upon. E.g., do NOT do this:
+#
+#    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
+#
+
+# Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
+# is empty/not-set by default):
+exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
