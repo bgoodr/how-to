@@ -113,7 +113,9 @@ def main():
     #  1. handling stdout and stderr from Popen:
     #     http://stackoverflow.com/a/7730201
     #  2. http://stackoverflow.com/a/17698359/257924
-    cmd = 'ls -ld /etc /etc/does_not_exist'
+    #
+    # Demonstrate that multiple shell commands can be included in the cmd:
+    cmd = 'export THE_ENV_VAR=the_env_var_value; ls -ld /etc /etc/does_not_exist; echo THE_ENV_VAR==$THE_ENV_VAR'
     #
     #
     # This does not work: it prints each character in the stdout_line,
@@ -180,57 +182,61 @@ def main():
     # Reading/writing from files and matching on regular expressions:
     # --------------------------------------------------------------------------------
 
-    print "Example: Reading a file and matching on regular expressions and subgroups:"
-    in_file = "/etc/issue"
-    with open(in_file, 'r') as f:
-        for line in f:
-            line = line.rstrip()
-            m = re.search("release *([0-9.]+)", line)
-            if m:
-                release_num = m.group(1)
-                print "release_num == <{}>".format(release_num)
+    if True:
+        print "Example: Reading a file and matching on regular expressions and subgroups:"
+        in_file = "/etc/issue"
+        with open(in_file, 'r') as f:
+            for line in f:
+                line = line.rstrip()
+                m = re.search("release *([0-9.]+)", line)
+                if m:
+                    release_num = m.group(1)
+                    print "release_num == <{}>".format(release_num)
 
-    print "Example: Reading a file and searching/replacing on a regular expression:"
-    with open(in_file, 'r') as f:
-        for line in f:
-            line = line.rstrip()
-            line = re.sub(r'release', '<REPLACEMENT>', line)
-            print line
+        print "Example: Reading a file and searching/replacing on a regular expression:"
+        with open(in_file, 'r') as f:
+            for line in f:
+                line = line.rstrip()
+                line = re.sub(r'release', '<REPLACEMENT>', line)
+                print line
 
-    print "Example: Writing a file and searching/replacing on a regular expression"
-    that_file = "/tmp/somefile.for.pythonTemplate"
-    queue = ["testing", "one", "two", "three"]
-    with open(that_file, 'w') as f:
-        for line in queue:
-            f.write(line + "\n")
+        print "Example: Writing a file and searching/replacing on a regular expression"
+        that_file = "/tmp/somefile.for.pythonTemplate"
+        queue = ["testing", "one", "two", "three"]
+        with open(that_file, 'w') as f:
+            for line in queue:
+                f.write(line + "\n")
 
     # --------------------------------------------------------------------------------
     # Context managers:
     # --------------------------------------------------------------------------------
 
-    with time_print("something to do"):
-        print 'sleeping ...'
-        time.sleep(1)
+    if True:
+        with time_print("something to do"):
+            print 'sleeping ...'
+            time.sleep(1)
 
     # --------------------------------------------------------------------------------
     # Working with dictionaries:
     # --------------------------------------------------------------------------------
 
-    # Formatting dictionary using lambda:
-    line_style = {"fill": "none", "fill-capacity": 1}
-    print ";".join(map(
-        lambda (k, v): "{}:{}".format(k, str(v)),
-        line_style.iteritems()))
+    if True:
+        # Formatting dictionary using lambda:
+        line_style = {"fill": "none", "fill-capacity": 1}
+        print ";".join(map(
+            lambda (k, v): "{}:{}".format(k, str(v)),
+            line_style.iteritems()))
 
     # --------------------------------------------------------------------------------
     # Try/except clauses:
     # --------------------------------------------------------------------------------
 
-    try:
-        raise argparse.ArgumentTypeError('{} was not set in the environment.'.format("THE_ENV_VAR"))
-    except argparse.ArgumentTypeError, e:
-        # raise Exception, "%s [%d]" % (e.strerror, e.errno)
-        print "The exception {}".format(e)
+    if True:
+        try:
+            raise argparse.ArgumentTypeError('{} was not set in the environment.'.format("THE_ENV_VAR"))
+        except argparse.ArgumentTypeError, e:
+            # raise Exception, "%s [%d]" % (e.strerror, e.errno)
+            print "The exception {}".format(e)
 
 
 if __name__ == '__main__':
