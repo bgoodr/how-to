@@ -50,15 +50,15 @@ def main():
 
     # Warning: because of this nargs='+' item below, this is valid:
     #
-    #     pythonTemplate.py -runmod one two -simplearg bar lonely
+    #     non_module_python_script.py -runmod one two -simplearg bar lonely
     #
     # but this is invalid:
     #
-    #     pythonTemplate.py -simplearg bar -runmod one two lonely
-    #     usage: pythonTemplate.py [-h] [-theint THEINT]
+    #     non_module_python_script.py -simplearg bar -runmod one two lonely
+    #     usage: non_module_python_script.py [-h] [-theint THEINT]
     #            [-runmod RUNMOD [RUNMOD ...]]
     #            [-simplearg SIMPLEARG] [-v] lonearg
-    #     pythonTemplate.py: error: too few arguments
+    #     non_module_python_script.py: error: too few arguments
     #
     parser.add_argument('-runmod', nargs='+',
                         help='runner and its arguments')
