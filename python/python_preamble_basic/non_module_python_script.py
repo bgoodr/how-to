@@ -63,6 +63,13 @@ def main():
     parser.add_argument('-runmod', nargs='+',
                         help='runner and its arguments')
     parser.add_argument('-simplearg', help='a simple arg')
+
+    # Demonstrate a mutually exclusive group:
+    action = parser.add_mutually_exclusive_group(required=False)
+    action.add_argument('--option1', action='store_true', help='The first option')
+    action.add_argument('--option2', action='store_true', help='The second option')
+    action.add_argument('--option3', action='store_true', help='The third option')
+
     parser.add_argument('lonearg', help='a lone arg')
     # -v is an example of an argument that does not take a value
     # (http://stackoverflow.com/a/5271692/257924):
@@ -74,6 +81,9 @@ def main():
     print 'args.simplearg {0}'.format(args.simplearg)
     print 'args.lonearg {0}'.format(args.lonearg)
     print 'args.theint {0}'.format(args.theint)
+    print 'args.option1 {0}'.format(args.option1)
+    print 'args.option2 {0}'.format(args.option2)
+    print 'args.option3 {0}'.format(args.option3)
 
     # --------------------------------------------------------------------------------
     # Lists:
