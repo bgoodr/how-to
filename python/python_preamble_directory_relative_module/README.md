@@ -15,9 +15,7 @@ The demonstrates the following:
   example.
 
 - Dynamically hack in to `sys.path` the directory for a module, and
-  execute a function in that module. This is considered to be a hack
-  by some, myself included, but I'm including this approach until I
-  can find a better way.
+  execute a function in that module.
 
   - See
     https://www.quora.com/What-are-some-good-examples-of-how-to-do-relative-imports-in-python-to-re-use-code-and-packages/answer/Vlad-Calin-1
