@@ -26,7 +26,13 @@ The demonstrates the following:
   - See https://github.com/jorgenschaefer/elpy/issues/1109 for a post
     I made to the elpy maintainer to see if there is a smarter way.
 
-  - The rationales for why I currently think I need this type of hack:
+    - Seems this is the correct approach. See http://stackoverflow.com/questions/11536764/how-to-fix-attempted-relative-import-in-non-package-even-with-init-py
+      and this https://www.python.org/dev/peps/pep-0366/ says: "Additional
+      code that manipulates sys.path would be needed in order for
+      direct execution to work without the top level package already
+      being importable. ". Which is what we are doing here.
+
+  - The rationales for why this is needed:
 
     - I'm doing active development so I do not want to install the
       module into some virtualenv while repeatedly reexecuting the
