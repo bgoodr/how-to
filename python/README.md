@@ -23,3 +23,8 @@ Find them disabled in [.flake8](.flake8).
 Move that file aside and see them by opening up Emacs (previously
 configured with [elpy](https://github.com/jorgenschaefer/elpy)) and
 use `C-c C-n` to proceed to each one.
+
+References
+==========
+
+* https://gist.github.com/twolfson/7636887
