@@ -275,6 +275,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-demo_print_file_line()
