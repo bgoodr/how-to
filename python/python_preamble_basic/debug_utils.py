@@ -11,4 +11,3 @@ def print_file_line(*args):
     """
     cf = currentframe()
     print "{}:{}: {}".format(getframeinfo(cf.f_back).filename, cf.f_back.f_lineno, " ".join([str(x) for x in args]))
-
