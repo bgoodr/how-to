@@ -9,6 +9,7 @@ import re
 import time
 from contextlib import contextmanager
 import subprocess
+from inspect import currentframe, getframeinfo
 
 
 # Example of contextmanager (http://tinyurl.com/llogvwu):
@@ -23,6 +24,36 @@ def time_print(task_name):
         yield
     finally:
         print task_name, "took", time.time() - t, "seconds."
+
+
+# TODO: Moving the print_file_line function into debug_utils.py, and
+# importing it, and calling it from this function does not work:
+#
+#   from debug_utils import print_file_line
+#
+# it emits :
+#   debug_utils.py:263: got ['a', 'b', 'c']
+#
+# So for now just inline it everywhere I need it (reference http://stackoverflow.com/a/20372465/257924 ):
+def print_file_line(*args):
+    """Print args in grep-like formatted output.
+
+    Print in format like grep -n -H would emit for compatibility
+    with other tools that expect it (e.g., Emacs grep and compile
+    mode buffers).
+    """
+    cf = currentframe()
+    print "{}:{}: {}".format(getframeinfo(cf).filename, cf.f_back.f_lineno, " ".join([str(x) for x in args]))
+
+
+def demo_print_file_line():
+    """Demonstrate print_file_line."""
+    print "got it"
+    # print_file_line("got here")
+    print "got it"
+    print_file_line("got", ["a", "b", "c"])
+    print "got it"
+    print_file_line("got", ["a", "b", "c", "d"])
 
 
 description = r"""
@@ -69,6 +100,9 @@ def main():
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
     args = parser.parse_args(sys.argv[1:])
+
+    # Call a function that demonstrates print_file_line:
+    demo_print_file_line()
 
     print 'args.runmod {0}'.format(args.runmod)
     print 'args.simplearg {0}'.format(args.simplearg)
@@ -241,3 +275,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+demo_print_file_line()
