@@ -12,6 +12,7 @@ import subprocess
 from inspect import currentframe, getframeinfo
 import itertools
 import functools
+from datetime import datetime
 
 
 def readlines(file):
@@ -87,6 +88,31 @@ def demo_print_file_line():
     print_file_line("got", ["a", "b", "c"])
     print "got it"
     print_file_line("got", ["a", "b", "c", "d"])
+
+
+def example_time_calculations():
+    """
+    http://stackoverflow.com/questions/6999726/how-can-i-convert-a-datetime-object-to-milliseconds-since-epoch-unix-time-in-p?answertab=votes#comment36393216_6999787
+    http://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python
+    http://stackoverflow.com/a/8778548/257924
+    """
+    print
+    start_time = "2017-05-09 21:53:55"
+    format = "%Y-%m-%d %H:%M:%S"
+    # dt0 will be a UTC date (not using pytz here so these are naive dates without timezones because my intent is to just do date subtraction to get timedeltas):
+    dt0 = datetime.strptime(start_time, format)
+    print 'dt0 {}'.format(dt0)
+    print 'dt0.timetuple() {}'.format(dt0.timetuple())
+    # 1494392035 should be a PDT localtime timestamp corresponding to 2017-05-09 21:53:55 in UTC:
+    print 'datetime.fromtimestamp(1494392035)    {}'.format(datetime.fromtimestamp(1494392035))
+    print 'datetime.utcfromtimestamp(1494392035) {}'.format(datetime.utcfromtimestamp(1494392035))
+    timestamp = int((dt0 - datetime(1970, 1, 1)).total_seconds())
+    print 'timestamp {}'.format(timestamp)
+    print 'datetime.utcfromtimestamp(timestamp) {}'.format(datetime.utcfromtimestamp(timestamp))
+    t0 = datetime.strptime("2017-05-11 06:20:00", format)
+    t1 = datetime.strptime("2017-05-11 07:20:00", format)
+    d = t1 - t0
+    print int(d.total_seconds())
 
 
 description = r"""
