@@ -10,6 +10,39 @@ import time
 from contextlib import contextmanager
 import subprocess
 from inspect import currentframe, getframeinfo
+import itertools
+import functools
+
+
+def readlines(file):
+    with open(file, "r") as f:
+        return f.readlines()
+
+
+def matchgroups(regexp, groupnum, line):
+    m = re.search(regexp, line)
+    if m:
+        return m.group(groupnum) if groupnum is not None else m.groups()
+    return None
+
+
+def firstof(lines, match_re, groupnum):
+    """Find result from the first call to pred of items.
+
+    Do not continue to evaluate items (short-circuiting).
+
+    Reference: http://stackoverflow.com/a/43906867/257924"""
+    return next(itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), lines)), None)
+
+
+def demo_firstof():
+    # Assume lines is constructed from some file using readlines above:
+    lines = ["line {}".format(x) for x in range(0, 21)]
+    lines[10] = "TIMESTAMP 2017-05-11 15:28"
+    print 'lines {}'.format(lines)
+    timestamp_re = r'^TIMESTAMP (.*)'
+    timestamp = firstof(lines, timestamp_re, 1)
+    print 'timestamp {}'.format(timestamp)
 
 
 # Example of contextmanager (http://tinyurl.com/llogvwu):
@@ -285,3 +318,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+demo_firstof()
