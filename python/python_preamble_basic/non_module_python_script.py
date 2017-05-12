@@ -105,10 +105,22 @@ def get_timestamp_from_datetime(dt, is_local_time=True):
     return timestamp
 
 
-# print
-# timestamp1 = get_timestamp_from_datetime(datetime(2011, 1, 1, 0, 0), True)
-# print 'datetime.utcfromtimestamp(timestamp1) {}'.format(datetime.utcfromtimestamp(timestamp1))
-# print 'datetime.datetime(2011, 1, 1, 0, 0) {}'.format(datetime(2011, 1, 1, 0, 0))
+def demo_get_timestamp_from_datetime():
+    xxx_dt1 = datetime.now()
+    print 'xxx_dt1       {}'.format(xxx_dt1)
+    xxx_string1 = '{}'.format(xxx_dt1.strftime('%Y-%m-%d %H:%M:%S'))
+    print 'xxx_string1   {}'.format(xxx_string1)
+    fmt = '%Y-%m-%d %H:%M:%S'
+    xxx_dt2 = datetime.strptime(xxx_string1, fmt)
+    print 'xxx_dt2       {}'.format(xxx_dt2)
+    xxx_timestamp = get_timestamp_from_datetime(xxx_dt2, is_local_time=True)
+    print 'xxx_timestamp {}'.format(xxx_timestamp)
+    xxx_dt3 = datetime.fromtimestamp(xxx_timestamp)
+    print 'xxx_dt3       {}'.format(xxx_dt3)
+    assert xxx_dt2 == xxx_dt3
+
+
+# demo_get_timestamp_from_datetime()
 
 
 def example_time_calculations():
@@ -138,7 +150,6 @@ def example_time_calculations():
     # print 'os.stat("afile").st_mtime {:.06f}'.format(os.stat("afile").st_mtime)
     # print subprocess.check_output("find afile -printf \"%p %T@\\n\"; ls -ld afile", shell=True)
     # print 'datetime.fromtimestamp(os.stat("afile").st_mtime) {}'.format(datetime.fromtimestamp(os.stat("afile").st_mtime))
-
 
 
 # Download and import pytz module:
