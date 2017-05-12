@@ -13,6 +13,7 @@ from inspect import currentframe, getframeinfo
 import itertools
 import functools
 from datetime import datetime, timedelta
+import calendar
 
 
 def readlines(file):
@@ -92,6 +93,24 @@ def demo_print_file_line():
     print_file_line("got", ["a", "b", "c", "d"])
 
 
+def get_timestamp_from_datetime(dt, is_local_time=True):
+    """Get an epoch timestamp from a UTC datetime.
+
+    Ref: https://docs.python.org/2/library/calendar.html#calendar.timegm
+         http://stackoverflow.com/a/8778548/257924"""
+    if is_local_time:
+        timestamp = time.mktime(dt.timetuple())  # DO NOT USE IT WITH UTC DATE
+    else:
+        timestamp = calendar.timegm(dt.timetuple())
+    return timestamp
+
+
+# print
+# timestamp1 = get_timestamp_from_datetime(datetime(2011, 1, 1, 0, 0), True)
+# print 'datetime.utcfromtimestamp(timestamp1) {}'.format(datetime.utcfromtimestamp(timestamp1))
+# print 'datetime.datetime(2011, 1, 1, 0, 0) {}'.format(datetime(2011, 1, 1, 0, 0))
+
+
 def example_time_calculations():
     """
     http://stackoverflow.com/questions/6999726/how-can-i-convert-a-datetime-object-to-milliseconds-since-epoch-unix-time-in-p?answertab=votes#comment36393216_6999787
@@ -115,6 +134,11 @@ def example_time_calculations():
     t1 = datetime.strptime("2017-05-11 07:20:00", format)
     d = t1 - t0
     print int(d.total_seconds())
+    # # Show how to get modification timestamp from file:
+    # print 'os.stat("afile").st_mtime {:.06f}'.format(os.stat("afile").st_mtime)
+    # print subprocess.check_output("find afile -printf \"%p %T@\\n\"; ls -ld afile", shell=True)
+    # print 'datetime.fromtimestamp(os.stat("afile").st_mtime) {}'.format(datetime.fromtimestamp(os.stat("afile").st_mtime))
+
 
 
 # Download and import pytz module:
