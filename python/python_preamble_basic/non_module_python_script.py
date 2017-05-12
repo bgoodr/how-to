@@ -27,22 +27,22 @@ def matchgroups(regexp, groupnum, line):
     return None
 
 
-def firstof(lines, match_re, groupnum):
-    """Find result from the first call to pred of items.
+def matchfirst(items, match_re, groupnum):
+    """Find first matching item from items.
 
     Do not continue to evaluate items (short-circuiting).
 
     Reference: http://stackoverflow.com/a/43906867/257924"""
-    return next(itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), lines)), None)
+    return next(itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items)), None)
 
 
-def demo_firstof():
+def demo_matchfirst():
     # Assume lines is constructed from some file using readlines above:
     lines = ["line {}".format(x) for x in range(0, 21)]
     lines[10] = "TIMESTAMP 2017-05-11 15:28"
     print 'lines {}'.format(lines)
     timestamp_re = r'^TIMESTAMP (.*)'
-    timestamp = firstof(lines, timestamp_re, 1)
+    timestamp = matchfirst(lines, timestamp_re, 1)
     print 'timestamp {}'.format(timestamp)
 
 
