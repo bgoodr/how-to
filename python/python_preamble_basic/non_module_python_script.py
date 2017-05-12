@@ -261,7 +261,7 @@ def datetime_strptime_dwim(dt_str_with_3_letter_zone, default_3_letter_timezone=
 
 # datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
 # datetime_strptime_dwim("2017-05-11")
-print datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
+# print datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
 # print datetime_tz3_to_olson_tz()
 # example_pytz()
 
