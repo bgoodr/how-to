@@ -12,7 +12,7 @@ import subprocess
 from inspect import currentframe, getframeinfo
 import itertools
 import functools
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def readlines(file):
@@ -115,6 +115,156 @@ def example_time_calculations():
     t1 = datetime.strptime("2017-05-11 07:20:00", format)
     d = t1 - t0
     print int(d.total_seconds())
+
+
+# Download and import pytz module:
+import urllib2
+tmpzip_path = "/tmp/pytz-because-python-does-not-include-it-when-it-really-should.zip"
+if not os.path.isfile(tmpzip_path):
+    downloads_f = urllib2.urlopen('https://pypi.python.org/pypi/pytz#downloads')
+    lines = [line.rstrip() for line in downloads_f]
+    zip_file = matchfirst(lines, r'<a href="(http[^"]*\.zip[^"]*)', 1)
+    zip_download_f = urllib2.urlopen(zip_file)
+    with open(tmpzip_path, "w") as tmp_zip_f:
+        tmp_zip_f.write(zip_download_f.read())
+if sys.path[0] != tmpzip_path:
+    sys.path.insert(0, tmpzip_path)
+import pytz
+
+
+def example_pytz():
+    """Example of pytz usage.
+
+    This is to prove that the above insane dynamic download and import
+    of the pytz module from the zip file actually works. I did that
+    because I have to use several different Python 2.x versions where
+    I cannot simply use pip as I would normally want to do.
+
+    Ref: https://pypi.python.org/pypi/pytz
+
+    """
+    from pytz import timezone
+    utc = pytz.utc
+    print 'utc {}'.format(utc)
+    print 'utc.zone {}'.format(utc.zone)
+    eastern = timezone('US/Eastern')
+    print 'eastern {}'.format(eastern)
+    amsterdam = timezone('Europe/Amsterdam')
+    print 'amsterdam {}'.format(amsterdam)
+    fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    loc_dt = eastern.localize(datetime(2002, 10, 27, 6, 0, 0))
+    print 'loc_dt {}'.format(loc_dt)
+    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    ams_dt = loc_dt.astimezone(amsterdam)
+    print 'ams_dt.strftime(fmt) {}'.format(ams_dt.strftime(fmt))
+    utc_dt = datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc)
+    loc_dt = utc_dt.astimezone(eastern)
+    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    before = loc_dt - timedelta(minutes=10)
+    print 'before.strftime(fmt) {}'.format(before.strftime(fmt))
+    utc_dt = utc.localize(datetime.utcfromtimestamp(1143408899))
+    print 'utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt))
+    au_tz = timezone('Australia/Sydney')
+    au_dt = utc_dt.astimezone(au_tz)
+    print 'au_dt.strftime(fmt) {}'.format(au_dt.strftime(fmt))
+    # pdt_tz = timezone('PDT')
+    # print 'pdt_tz {}'.format(pdt_tz)
+    uspac_tz = timezone('US/Pacific')
+    print 'uspac_tz {}'.format(uspac_tz)
+    print
+    print "Choose a UTC date that we know will be PDT:"
+    utc_dt = datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc)
+    print 'utc_dt {}'.format(utc_dt)
+    uspac_dt = utc_dt.astimezone(uspac_tz)
+    print 'uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt))
+    print
+    print "Choose a UTC date that we know will be PST:"
+    utc_dt = datetime(2002, 12, 27, 6, 0, 0, tzinfo=utc)
+    print 'utc_dt {}'.format(utc_dt)
+    uspac_dt = utc_dt.astimezone(uspac_tz)
+    print 'uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt))
+    print
+    print "Try strptime and strftime to include something similar to a timezone indicator:"
+    # http://stackoverflow.com/a/14763408/257924 says:
+    #   "You can format a timezone as a 3-letter abbreviation, but you can't parse it back from that"
+    # grrrrRRRRRrrr!
+    # fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    fmt = '%Y-%m-%d %H:%M:%S'
+    d = datetime.now(pytz.timezone("America/New_York"))
+    dtz_string = d.strftime(fmt) + ' ' + "America/New_York"
+    print 'dtz_string {}'.format(dtz_string)
+    d_string, tz_string = dtz_string.rsplit(' ', 1)
+    print 'd_string {}'.format(d_string)
+    print 'tz_string {}'.format(tz_string)
+    d2 = datetime.strptime(d_string, fmt)
+    print 'd2 {}'.format(d2)
+    tz2 = pytz.timezone(tz_string)
+    print 'tz2 {}'.format(tz2)
+    print 'dtz_string {}'.format(dtz_string)
+    print d2.strftime(fmt) + ' ' + tz_string
+    print
+    print "How to convert from localtime to some other timezones: http://stackoverflow.com/a/13346065"
+    pacific = pytz.timezone('US/Pacific')
+    print 'pacific {}'.format(pacific)
+    fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    loc_dt = pacific.localize(datetime(2017, 05, 11, 21, 57, 0))
+    print 'loc_dt {}'.format(loc_dt)
+    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    utc_dt = loc_dt.astimezone(pytz.UTC)
+    print 'utc_dt {}'.format(utc_dt)
+    print 'utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt))
+    mountain = pytz.timezone('US/Mountain')
+    print 'mountain {}'.format(mountain)
+    mountain_dt = loc_dt.astimezone(mountain)
+    print 'mountain_dt {}'.format(mountain_dt)
+    print 'mountain_dt.strftime(fmt) {}'.format(mountain_dt.strftime(fmt))
+
+
+def datetime_tz3_to_olson_tz():
+    # http://stackoverflow.com/questions/7669938/get-the-olson-tz-name-for-the-local-timezone
+    # was helpful: You HAVE to have a magic decoder ring:
+    com_tzs = (com_tz for com_tz in pytz.common_timezones if re.search(r'^US', com_tz))
+    fmt = '%Z'
+    decoder = {}
+    for com_tz in com_tzs:
+        d = datetime.now(pytz.timezone(com_tz))
+        short_tz = d.strftime(fmt)
+        if short_tz[-2:] == 'DT' or short_tz[-2:] == 'ST':
+            for x in ['DT', 'ST']:
+                decoder[short_tz[0:-2] + x] = com_tz
+    return decoder
+
+
+def datetime_strptime_dwim(dt_str_with_3_letter_zone, default_3_letter_timezone="UTC"):
+    """http://stackoverflow.com/questions/7669938/get-the-olson-tz-name-for-the-local-timezone"""
+    dt_string, tm_string, tz_string = (None, None, None)  # <-- how to do this more elegantly?
+    elems = dt_str_with_3_letter_zone.split(' ')
+    if len(elems) == 3:
+        dt_string, tm_string, tz_string = elems
+    elif len(elems) == 2:
+        dt_string, tm_string, tz_string = elems[0], elems[1], default_3_letter_timezone
+    else:
+        dt_string, tm_string, tz_string = elems[0], "00:00:00", default_3_letter_timezone
+    decoder = datetime_tz3_to_olson_tz()
+    print 'dt_string {}'.format(dt_string)
+    print 'tm_string {}'.format(tm_string)
+    print 'tz_string {}'.format(tz_string)
+    if tz_string not in decoder:
+        raise ValueError("ASSERTION FAILED: Unexpected timezone: {}".format(tz_string))
+    olson_tz = pytz.timezone(decoder[tz_string])
+    print 'olson_tz {}'.format(olson_tz)
+    fmt = '%Y-%m-%d %H:%M:%S'
+    print "xxx {} {}".format(dt_string, tm_string)
+    dt = datetime.strptime("{} {}".format(dt_string, tm_string), fmt)
+    print 'dt {}'.format(dt)
+    dt = dt.astimezone(olson_tz)
+    print 'dt {}'.format(dt)
+
+# datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
+# datetime_strptime_dwim("2017-05-11")
+# datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
+# print datetime_tz3_to_olson_tz()
+# example_pytz()
 
 
 description = r"""
