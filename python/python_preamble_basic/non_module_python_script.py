@@ -235,7 +235,9 @@ def datetime_tz3_to_olson_tz():
 
 
 def datetime_strptime_dwim(dt_str_with_3_letter_zone, default_3_letter_timezone="UTC"):
-    """http://stackoverflow.com/questions/7669938/get-the-olson-tz-name-for-the-local-timezone"""
+    """Parse a datetime string in the form of "YYYY-MM-DD HH:MM:SS ZZZ" where ZZZ is the three letter timezone into a datetime object.
+
+    Ref: http://stackoverflow.com/questions/7669938/get-the-olson-tz-name-for-the-local-timezone"""
     dt_string, tm_string, tz_string = (None, None, None)  # <-- how to do this more elegantly?
     elems = dt_str_with_3_letter_zone.split(' ')
     if len(elems) == 3:
@@ -245,23 +247,21 @@ def datetime_strptime_dwim(dt_str_with_3_letter_zone, default_3_letter_timezone=
     else:
         dt_string, tm_string, tz_string = elems[0], "00:00:00", default_3_letter_timezone
     decoder = datetime_tz3_to_olson_tz()
-    print 'dt_string {}'.format(dt_string)
-    print 'tm_string {}'.format(tm_string)
-    print 'tz_string {}'.format(tz_string)
     if tz_string not in decoder:
         raise ValueError("ASSERTION FAILED: Unexpected timezone: {}".format(tz_string))
     olson_tz = pytz.timezone(decoder[tz_string])
-    print 'olson_tz {}'.format(olson_tz)
     fmt = '%Y-%m-%d %H:%M:%S'
-    print "xxx {} {}".format(dt_string, tm_string)
     dt = datetime.strptime("{} {}".format(dt_string, tm_string), fmt)
-    print 'dt {}'.format(dt)
-    dt = dt.astimezone(olson_tz)
-    print 'dt {}'.format(dt)
+    loc_dt = olson_tz.localize(dt)
+    dt2 = loc_dt.astimezone(olson_tz)
+    # fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    # print 'dt2.strftime(fmt) {}'.format(dt2.strftime(fmt))
+    return dt2
+
 
 # datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
 # datetime_strptime_dwim("2017-05-11")
-# datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
+print datetime_strptime_dwim("2017-05-11 20:44:00 PDT")
 # print datetime_tz3_to_olson_tz()
 # example_pytz()
 
