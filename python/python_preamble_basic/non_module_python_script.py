@@ -187,8 +187,7 @@ def example_pytz():
     print "Try strptime and strftime to include something similar to a timezone indicator:"
     # http://stackoverflow.com/a/14763408/257924 says:
     #   "You can format a timezone as a 3-letter abbreviation, but you can't parse it back from that"
-    # grrrrRRRRRrrr!
-    # fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    # So, see datetime_tz3_to_olson_tz below.
     fmt = '%Y-%m-%d %H:%M:%S'
     d = datetime.now(pytz.timezone("America/New_York"))
     dtz_string = d.strftime(fmt) + ' ' + "America/New_York"
