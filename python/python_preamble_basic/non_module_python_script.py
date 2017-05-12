@@ -16,11 +16,13 @@ from datetime import datetime
 
 
 def readlines(file):
+    """Read all lines of a file."""
     with open(file, "r") as f:
         return f.readlines()
 
 
 def matchgroups(regexp, groupnum, line):
+    """Return the group or groups for a given match, else return None."""
     m = re.search(regexp, line)
     if m:
         return m.group(groupnum) if groupnum is not None else m.groups()
