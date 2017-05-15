@@ -70,6 +70,22 @@ def time_print(task_name):
         print task_name, "took", time.time() - t, "seconds."
 
 
+@contextmanager
+def change_pwd(new_dir):
+    """Temporarily change the current working directory to new_dir, restoring the original directory.
+
+    with change_pwd(indir):
+        # ... Do some processing with the current working directory being changed to indir here. ...
+        pass
+    """
+    savedir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(savedir)
+
+
 # TODO: Moving the print_file_line function into debug_utils.py, and
 # importing it, and calling it from this function does not work:
 #
