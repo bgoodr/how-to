@@ -31,7 +31,6 @@ def matchgroups(regexp, groupnum, item):
     """
     m = re.search(regexp, item)
     if m:
-        print 'matchgroups: matched regexp {}: {}'.format(regexp, item)
         if groupnum is not None:
             if groupnum == -1:
                 return item
