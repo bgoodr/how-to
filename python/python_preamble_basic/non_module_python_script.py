@@ -43,20 +43,20 @@ def matchgroups(regexp, groupnum, item):
     return None
 
 
+def matchalliter(items, match_re, groupnum):
+    """Returns an iterator that matches all items in the regular expression given by match_re.
+
+    Treats match_re and groupnum the same as matchgroups"""
+    return itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items))
+
+
 def matchfirst(items, match_re, groupnum):
     """Find first matching item from items.
 
     Do not continue to evaluate items (short-circuiting).
 
     Reference: http://stackoverflow.com/a/43906867/257924"""
-    return next(itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items)), None)
-
-
-def matchalliter(items, match_re, groupnum):
-    """Returns an iterator that matches all items in the regular expression given by match_re.
-
-    Treats match_re and groupnum the same as matchgroups"""
-    return itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items))
+    return next(matchalliter(items, match_re, groupnum), None)
 
 
 def demo_matchfirst():
