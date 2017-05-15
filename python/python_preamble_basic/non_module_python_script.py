@@ -22,11 +22,24 @@ def readlines(file):
         return f.readlines()
 
 
-def matchgroups(regexp, groupnum, line):
-    """Return the group or groups for a given match, else return None."""
-    m = re.search(regexp, line)
+def matchgroups(regexp, groupnum, item):
+    """Return the group or groups for a given match, else return None.
+
+    Be sure to either use parenthesis which are regular expression grouping operators:
+      r'^(.*)$'
+    or pass -1 to groupnum which means return the entire item.
+    """
+    m = re.search(regexp, item)
     if m:
-        return m.group(groupnum) if groupnum is not None else m.groups()
+        print 'matchgroups: matched regexp {}: {}'.format(regexp, item)
+        if groupnum is not None:
+            if groupnum == -1:
+                return item
+            else:
+                return m.group(groupnum)
+        else:
+            return m.groups()
+        assert(False)
     return None
 
 
