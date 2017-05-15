@@ -39,6 +39,13 @@ def matchfirst(items, match_re, groupnum):
     return next(itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items)), None)
 
 
+def matchalliter(items, match_re, groupnum):
+    """Returns an iterator that matches all items in the regular expression given by match_re.
+
+    Treats match_re and groupnum the same as matchgroups"""
+    return itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items))
+
+
 def demo_matchfirst():
     # Assume lines is constructed from some file using readlines above:
     lines = ["line {}".format(x) for x in range(0, 21)]
