@@ -14,6 +14,7 @@ import itertools
 import functools
 from datetime import datetime, timedelta
 import calendar
+import mmap
 
 # How to run the debugger at a particular area of code:
 # import pdb
@@ -24,6 +25,47 @@ def readlines(file):
     """Read all lines of a file."""
     with open(file, "r") as f:
         return f.readlines()
+
+
+def readline_last(text_file):
+    """An iterator to read from the last lines of a file.
+
+    Example:
+
+        for line in readline_last(accounting_file):
+            line = line.rstrip()
+            print 'line {}'.format(line)
+    """
+    file_size = os.stat(text_file).st_size
+    if file_size == 0:
+        return
+    with open(text_file, "r+b") as f:
+        map = None
+        try:
+            map = mmap.mmap(f.fileno(), 0)
+            map.seek(0, os.SEEK_END)
+            end = map.tell()
+            if end == 0:
+                return
+            i = end - 1
+            if map[i] == '\n':
+                i -= 1
+                if i < 0:
+                    yield '\n'
+                    return
+            while i > 0:
+                while i > 0 and map[i] != '\n':
+                    i -= 1
+                if map[i] == '\n':
+                    i += 1
+                map.seek(i)
+                yield map.readline()
+                i -= 1
+                if i > 0 and map[i] == '\n':
+                    i -= 1
+        finally:
+            if map:
+                map.close()
 
 
 def matchgroups(regexp, groupnum, item):
