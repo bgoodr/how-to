@@ -174,6 +174,16 @@ def demo_print_file_line():
     print_file_line("got", ["a", "b", "c", "d"])
 
 
+def get_datetime_from_timestamp_milliseconds(milliseconds):
+    """Convert a Unix timestamp in milliseconds since the epoch into a datetime object.
+
+    Ref: http://stackoverflow.com/questions/748491/how-do-i-create-a-datetime-in-python-from-milliseconds/31625298#31625298
+    """
+    base_datetime = datetime(1970, 1, 1)
+    delta = timedelta(0, 0, 0, milliseconds)
+    return base_datetime + delta
+
+
 def get_timestamp_from_datetime(dt, is_local_time=True):
     """Get an epoch timestamp from a UTC datetime.
 
