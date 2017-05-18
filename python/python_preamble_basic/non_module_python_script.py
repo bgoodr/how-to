@@ -15,6 +15,10 @@ import functools
 from datetime import datetime, timedelta
 import calendar
 
+# How to run the debugger at a particular area of code:
+# import pdb
+# pdb.set_trace()
+
 
 def readlines(file):
     """Read all lines of a file."""
