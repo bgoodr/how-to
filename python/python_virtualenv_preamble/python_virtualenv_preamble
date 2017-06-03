@@ -35,7 +35,7 @@
 #   exec "$(dirname $0)/python_virtualenv_preamble" "$0" "$@"
 #
 # have those wrapper scripts just source this script directly. This
-# allows us to maintain a central copy of of the preamble, while
+# allows us to maintain a central copy of the preamble, while
 # having different wrapper scripts and their corresponding .py files
 # located in various subdirectories:
 # ================================================================================
