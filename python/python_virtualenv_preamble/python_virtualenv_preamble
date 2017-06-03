@@ -4,7 +4,7 @@
 #
 #    # Use a central virtualenv for all scripts located in various subdirectories:
 #    PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES="requests|requests import%20apiclient.discovery|google-api-python-client"
-#    . $HOME/bin/python_virtualenv_preamble "$0" "$@"
+#    . /the/path/to/the/dir/containing/python_virtualenv_preamble "$0" "$@"
 #
 # The above idempotently ensures that the packages specified by
 # PYTHON_VIRTUAL_ENV_REQUIRED_PACKAGES are in the virtual env (by
