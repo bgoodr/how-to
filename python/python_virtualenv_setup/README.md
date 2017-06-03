@@ -10,12 +10,12 @@ Rationale
 
 You must set the `PYTHON_LATEST` in your environment before executing
 it, to point to the python executable you have built locally. This can
-a actually be set to `/usr/bin/python` on systems that have a more
+actually be set to `/usr/bin/python` on systems that have a more
 up-to-date Python (e.g., Ubuntu).
 
 I could not just use `/usr/bin/python` on the RHEL systems since I am
 not in control over the version of Python on those systems, but on the
-Ubuntu systems I use I can control that via.
+Ubuntu systems I use I can control that via the apt system.
 
 Usage
 =====
