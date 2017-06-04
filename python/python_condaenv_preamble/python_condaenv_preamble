@@ -147,7 +147,7 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
 # Optimization: Only do the env existence check if
 # PYTHON_CONDAENV_INSTALL_CHECK is set:
 #
-if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
+if [ -n "$PYTHON_CONDAENV_INSTALL_CHECK" ]
 then
   #
   # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
@@ -190,7 +190,7 @@ fi
 # Optimization: Only do the package installation if
 # PYTHON_CONDAENV_INSTALL_CHECK is set:
 #
-if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
+if [ -n "$PYTHON_CONDAENV_INSTALL_CHECK" ]
 then
   #
   # Detect and install required packages into that condaenv:
