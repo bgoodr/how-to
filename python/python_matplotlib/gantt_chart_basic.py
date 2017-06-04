@@ -33,10 +33,7 @@ def CreateGanttChart(fname):
     """
     ylabels = []
     customDates = []
-    try:
-        textlist = open(fname).readlines()
-    except:
-        return
+    textlist = open(fname).readlines()
 
     for tx in textlist:
         if not tx.startswith('#'):
@@ -106,15 +103,11 @@ def main():
         prog=os.path.basename(os.path.splitext(sys.argv[0])[0]),  # Avoid showing the .py file extension in the usage help
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-f', '--project_file', help='Path to project file.')
+    parser.add_argument('-f', '--project_file', help='Path to project file.', required=True)
     args = parser.parse_args(sys.argv[1:])
-    print 'args {}'.format(args)
 
     CreateGanttChart(args.project_file)
 
 
 if __name__ == '__main__':
     main()
-
-
-CreateGanttChart("projectChart.txt")
