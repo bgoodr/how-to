@@ -99,7 +99,8 @@ cat_log () {
 
 PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR=${PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR:-$HOME/conda}
 PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION:-2}
-CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
+# Arrange the miniconda installation directory to be release-specific just in case there is variation between releases as is typical:
+CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
   if [ "$PYTHON_CONDAENV_INSTALL_CHECK" != 1 ]
@@ -136,10 +137,10 @@ export PATH=$CONDA_INSTALL_DIR/bin:$PATH
 
 # Define the default condaenv:
 #
-#   Users can override the name of the environment by setting CONDA_ENV
+#   Users can override the name of the environment by setting PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
 #   in the environment before execution
 #
-CONDA_ENV=${CONDA_ENV:-env1}
+PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
 
 #
 # Optimization: Only do the env existence check if
@@ -148,27 +149,27 @@ CONDA_ENV=${CONDA_ENV:-env1}
 if [ "$PYTHON_CONDAENV_INSTALL_CHECK" = 1 ]
 then
   #
-  # Build the environment given by CONDA_ENV:
+  # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
   #
   #   The goal here is to just clone the root environment. Individual
   #   preamble scripts can install whatever packages they need
   #   dynamically via the PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES environment
   #   variable.
   #
-  env_existence=$(conda info --envs | grep "^$CONDA_ENV ")
+  env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
   if [ -z "$env_existence" ]
   then
-    set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$CONDA_ENV.log
+    set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
     (
       set -x -e
       cd $CONDA_INSTALL_DIR
-      conda create --name $CONDA_ENV --clone root
+      conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
     ) &> $log
     if [ $? != 0 ]
     then
       cat_log
       echo
-      echo "ERROR: Failed to create condaenv: $CONDA_ENV"
+      echo "ERROR: Failed to create condaenv: $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
       exit 1
     fi
   fi
@@ -177,10 +178,10 @@ fi
 #
 # Activate the condaenv:
 #
-source activate $CONDA_ENV
+source activate $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
 if [ $? != 0 ]
 then
-  echo "ERROR: Could not activate condaenv $CONDA_ENV"
+  echo "ERROR: Could not activate condaenv $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
   exit 1
 fi
 
@@ -211,19 +212,19 @@ then
     then
       :
     else
-      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$CONDA_ENV.log.$$
+      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log.$$
       (
         if [ $installer = "pip" ]
         then
           pip install --upgrade $package
         elif [ $installer = "conda" ]
         then
-          package_existence=$(conda list -n $CONDA_ENV -f $package | grep -v '^#')
+          package_existence=$(conda list -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -f $package | grep -v '^#')
           if [ -z "$package_existence" ]
           then
-            conda install -y -n $CONDA_ENV $package
+            conda install -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           else
-            conda update -y -n $CONDA_ENV $package
+            conda update -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           fi
         else
           echo "ERROR: Invalid installer: \"$installer\""
