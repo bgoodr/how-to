@@ -1,8 +1,3 @@
 #!/bin/bash
-# Reuse the python_preamble_basic script:
-#
-#   For this example, we co-locate it next to the
-#   non_module_python_script.py file but it could be stored into some
-#   other ../ directory.
-#
-exec "$(dirname $0)/../python_preamble_basic/python_preamble_basic" "$0" "$@"
+PYTHON_CONDAENV_REQUIRED_PACKAGES="import%20matplotlib|conda|matplotlib"
+exec "$(dirname $0)/../python_condaenv_preamble/python_condaenv_preamble" "$0" "$@"
