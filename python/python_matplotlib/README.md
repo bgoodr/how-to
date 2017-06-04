@@ -22,6 +22,6 @@ Install conda and all required packages as indicated in the
 
     PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR=/tmp/conda2 \
     PYTHON_CONDAENV_PREAMBLE_VERBOSE=1 \
-    PYTHON_CONDAENV_INSTALL_CHECK=1 \
+    PYTHON_CONDAENV_PREAMBLE_INSTALL=1 \
     time ./gantt_chart_basic
 

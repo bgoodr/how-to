@@ -16,7 +16,7 @@
 #    what packages to install and which installer (pip, conda, etc.) to
 #    use.
 #
-#  PYTHON_CONDAENV_INSTALL_CHECK -- When set to 1, idempotently
+#  PYTHON_CONDAENV_PREAMBLE_INSTALL -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
 #    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable. When set to
 #    install-only, just install.
@@ -30,15 +30,15 @@
 #    #!/bin/bash
 #    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="import%20matplotlib|conda|matplotlib"
 #    # Only install conda, the env, and packages within the env, when
-#    # PYTHON_CONDAENV_INSTALL_CHECK is set to 1. By default, leave it
+#    # PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1. By default, leave it
 #    # unset to avoid 4 seconds of checking logic each time we invoke the
 #    # script.:
 #    #
-#    #  export PYTHON_CONDAENV_INSTALL_CHECK=1
+#    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
 #    # 
 #    exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
 #
-# Only when PYTHON_CONDAENV_INSTALL_CHECK is set to 1, the above
+# Only when PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1, the above
 # idempotently ensures that the packages specified by
 # PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES are in the conda environment (by
 # installing them into that environment as needed), and then invokes
@@ -104,9 +104,9 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_P
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
-  if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
+  if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
   then
-    echo "ERROR: CONDA_INSTALL_DIR \"$CONDA_INSTALL_DIR\" does not exist as a directory. Set PYTHON_CONDAENV_INSTALL_CHECK=1 and reinvoke to install it."
+    echo "ERROR: CONDA_INSTALL_DIR \"$CONDA_INSTALL_DIR\" does not exist as a directory. Set PYTHON_CONDAENV_PREAMBLE_INSTALL=1 and reinvoke to install it."
     exit 1
   fi
 
@@ -145,9 +145,9 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
 
 #
 # Optimization: Only do the env existence check if
-# PYTHON_CONDAENV_INSTALL_CHECK is set:
+# PYTHON_CONDAENV_PREAMBLE_INSTALL is set:
 #
-if [ -n "$PYTHON_CONDAENV_INSTALL_CHECK" ]
+if [ -n "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
 then
   #
   # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
@@ -188,9 +188,9 @@ fi
 
 #
 # Optimization: Only do the package installation if
-# PYTHON_CONDAENV_INSTALL_CHECK is set:
+# PYTHON_CONDAENV_PREAMBLE_INSTALL is set:
 #
-if [ -n "$PYTHON_CONDAENV_INSTALL_CHECK" ]
+if [ -n "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
 then
   #
   # Detect and install required packages into that condaenv:
@@ -256,7 +256,7 @@ fi
 #
 # Allow for just setting up and not execution
 #
-if [ "$PYTHON_CONDAENV_INSTALL_CHECK" != "install-only" ]
+if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" != "install-only" ]
 then
   #
   # Invoke the script:
