@@ -8,6 +8,8 @@ Files:
 - [python_condaenv_preamble](python_condaenv_preamble) -- The preamble wrapper that calls installs dependent packages into a conda environment and then calls the .py script.
 - [example_condaenv_script](example_condaenv_script) -- An example conda-based wrapper script that calls a corresponding .py file
 
+See also [python_matplotlib](../python_matplotlib/README.md) for more indepth matplotlib-using script that leverages this preamble script.
+
 Rationale
 =========
 
