@@ -189,12 +189,21 @@ caller=$1
 shift
 
 #
-# We desire NOT to set PYTHONPATH here. We desire to let the .py file
-# resolve paths to the modules it depends upon. E.g., do NOT do this:
+# Allow for just setting up and not execution
 #
-#    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
+#   When caller is not set, it means that this script is used only for
+#   setting up the conda env only and no execution.
 #
+if [ -n "$caller" ]
+then
+  #
+  # We desire NOT to set PYTHONPATH here. We desire to let the .py file
+  # resolve paths to the modules it depends upon. E.g., do NOT do this:
+  #
+  #    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
+  #
 
-# Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
-# is empty/not-set by default):
-exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
+  # Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
+  # is empty/not-set by default):
+  exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
+fi
