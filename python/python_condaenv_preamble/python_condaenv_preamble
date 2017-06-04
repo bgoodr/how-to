@@ -18,7 +18,8 @@
 #
 #  PYTHON_CONDAENV_INSTALL_CHECK -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
-#    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable.
+#    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable. When set to
+#    install-only, just install.
 #
 # PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
 #   installation output as it occurs. Otherwise, be silent about the
@@ -103,7 +104,7 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_P
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
-  if [ "$PYTHON_CONDAENV_INSTALL_CHECK" != 1 ]
+  if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
   then
     echo "ERROR: CONDA_INSTALL_DIR \"$CONDA_INSTALL_DIR\" does not exist as a directory. Set PYTHON_CONDAENV_INSTALL_CHECK=1 and reinvoke to install it."
     exit 1
@@ -144,9 +145,9 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
 
 #
 # Optimization: Only do the env existence check if
-# PYTHON_CONDAENV_INSTALL_CHECK is set to 1:
+# PYTHON_CONDAENV_INSTALL_CHECK is set:
 #
-if [ "$PYTHON_CONDAENV_INSTALL_CHECK" = 1 ]
+if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
 then
   #
   # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
@@ -187,9 +188,9 @@ fi
 
 #
 # Optimization: Only do the package installation if
-# PYTHON_CONDAENV_INSTALL_CHECK is set to 1:
+# PYTHON_CONDAENV_INSTALL_CHECK is set:
 #
-if [ "$PYTHON_CONDAENV_INSTALL_CHECK" = 1 ]
+if [ -z "$PYTHON_CONDAENV_INSTALL_CHECK" ]
 then
   #
   # Detect and install required packages into that condaenv:
@@ -253,19 +254,16 @@ then
 fi
 
 #
-# Invoke the script:
-#
-caller=$1
-shift
-
-#
 # Allow for just setting up and not execution
 #
-#   When caller is not set, it means that this script is used only for
-#   setting up the conda env only and no execution.
-#
-if [ -n "$caller" ]
+if [ "$PYTHON_CONDAENV_INSTALL_CHECK" != "install-only" ]
 then
+  #
+  # Invoke the script:
+  #
+  caller=$1
+  shift
+
   #
   # We desire NOT to set PYTHONPATH here. We desire to let the .py file
   # resolve paths to the modules it depends upon. E.g., do NOT do this:
