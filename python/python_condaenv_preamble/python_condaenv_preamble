@@ -1,0 +1,200 @@
+#!/bin/bash
+# -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+#
+# Example Usage:
+#
+#    # Use a central condaenv for all scripts located in various subdirectories:
+#    PYTHON_CONDAENV_REQUIRED_PACKAGES="import%20matplotlib|conda|matplotlib"
+#    . /the/path/to/the/dir/containing/python_condaenv_preamble "$0" "$@"
+#
+# The above idempotently ensures that the packages specified by
+# PYTHON_CONDAENV_REQUIRED_PACKAGES are in the conda environment (by
+# installing them into that environment as needed), and then invokes
+# the .py script that depends upon those packages.
+#
+# The first string before the "|" can be constructed as a url-encoded
+# Python statement to import the package:
+#
+#     $ python
+#     Python 2.7.12 (default, Jul  1 2016, 15:12:24) 
+#     [GCC 5.4.0 20160609] on linux2
+#     Type "help", "copyright", "credits" or "license" for more information.
+#     >>> import urllib
+#     >>> urllib.quote("from selenium import webdriver")
+#     'from%20selenium%20import%20webdriver'
+#     >>> urllib.unquote(urllib.quote("from selenium import webdriver"))
+#     'from selenium import webdriver'
+#
+# This was done because some modules require complicated import
+# statements (e.g., the selenium module above is a good example of
+# that).
+
+# ================================================================================
+# Instead of having all wrapper scripts do the following:
+#
+#   # Generic forwarding stub for all .py scripts:
+#   exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
+#
+# have those wrapper scripts just source this script directly. This
+# allows us to maintain a central copy of of the preamble, while
+# having different wrapper scripts and their corresponding .py files
+# located in various subdirectories:
+# ================================================================================
+
+
+#
+# Install the root conda environment if it does not already exist:
+#
+#   Each of these variables are overridable by the user, or the
+#   script, to relocate the condaenv:
+#
+CONDA_HEAD_DIR=${CONDA_HEAD_DIR:-$HOME/conda}
+CONDA_PYTHON_VERSION=${CONDA_PYTHON_VERSION:-2}
+CONDA_INSTALL_DIR=${CONDA_INSTALL_DIR:-$CONDA_HEAD_DIR/miniconda$CONDA_PYTHON_VERSION}
+if [ ! -d $CONDA_INSTALL_DIR ]
+then
+  if ! mkdir -p $CONDA_HEAD_DIR
+  then
+    echo "ERROR: Cannot create $CONDA_HEAD_DIR a directory."
+    exit 1
+  fi
+  # This name of installer may need to be fiddled with for Mac but this works for Linux:
+  installer=Miniconda${CONDA_PYTHON_VERSION}-latest-$(uname -s)-$(uname -m).sh
+  log=$CONDA_HEAD_DIR/$installer.log
+  (
+    set -x -e
+    cd $CONDA_HEAD_DIR
+    wget https://repo.continuum.io/miniconda/$installer
+    bash ./$installer -b -p $CONDA_INSTALL_DIR
+  ) &> $log
+  if [ $? != 0 ]
+  then
+    cat $log
+    echo
+    echo "ERROR: Failed to install root conda environment. See above output for errors."
+    exit 1
+  fi
+fi
+
+# Get the new conda executable into the PATH:
+export PATH=$CONDA_INSTALL_DIR/bin:$PATH
+
+# Define the default condaenv:
+#
+#   Users can override the name of the environment by setting CONDA_ENV
+#   in the environment before execution
+#
+CONDA_ENV=${CONDA_ENV:-env1}
+
+#
+# Build the environment given by CONDA_ENV:
+#
+#   The goal here is to just clone the root environment. Individual
+#   preamble scripts can install whatever packages they need
+#   dynamically via the PYTHON_CONDAENV_REQUIRED_PACKAGES environment
+#   variable.
+#
+env_existence=$(conda info --envs | grep "^$CONDA_ENV ")
+if [ -z "$env_existence" ]
+then
+  log=$CONDA_HEAD_DIR/conda_create_env.$CONDA_ENV.log
+  (
+    set -x -e
+    cd $CONDA_INSTALL_DIR
+    conda create --name $CONDA_ENV --clone root
+  ) &> $log
+  if [ $? != 0 ]
+  then
+    cat $log
+    echo
+    echo "ERROR: Failed to create condaenv: $CONDA_ENV"
+    exit 1
+  fi
+fi
+
+#
+# Activate the condaenv:
+#
+source activate $CONDA_ENV
+if [ $? != 0 ]
+then
+  echo "ERROR: Could not activate condaenv $CONDA_ENV"
+  exit 1
+fi
+
+#
+# Detect and install required packages into that condaenv:
+#
+for package_tuple in $PYTHON_CONDAENV_REQUIRED_PACKAGES
+do
+  #
+  # Split on vertical bar:
+  #
+  unset import_package_statement installer package
+  eval $(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; installer=\"%s\"; package=\"%s\"\n", $1, $2, $3); }')
+  if [ -z "$import_package_statement" -o -z "$installer" -o -z "$package" ]
+  then
+    echo "ERROR: PYTHON_CONDAENV_REQUIRED_PACKAGES should be of the form \"import_package_statement1|installer1|package1 import_package_statement2|installer2|package2 ...\""
+    exit 1
+  fi
+
+  exec_statement="import urllib; script = urllib.unquote(\"$import_package_statement\"); exec(script)"
+  if python -c "$exec_statement" &> /dev/null
+  then
+    :
+  else
+    log=$CONDA_HEAD_DIR/install_package.$CONDA_ENV.log.$$
+    (
+      if [ $installer = "pip" ]
+      then
+        pip install --upgrade $package
+      elif [ $installer = "conda" ]
+      then
+        package_existence=$(conda list -n $CONDA_ENV -f $package | grep -v '^#')
+        if [ -z "$package_existence" ]
+        then
+          conda install -y -n $CONDA_ENV $package
+        else
+          conda update -y -n $CONDA_ENV $package
+        fi
+      else
+        echo "ERROR: Invalid installer: \"$installer\""
+        exit 1
+      fi
+    ) &> $log
+    if [ $? != 0 ]
+    then
+      cat $log
+      echo
+      echo "ERROR: Install of package $package failed. See above."
+      exit 1
+    fi
+
+    if python -c "$exec_statement" &> /dev/null
+    then
+      :
+    else
+      cat $log
+      echo
+      echo "ERROR: Install of package $package failed. See above."
+      exit 1
+    fi
+  fi
+done
+
+#
+# Invoke the script:
+#
+caller=$1
+shift
+
+#
+# We desire NOT to set PYTHONPATH here. We desire to let the .py file
+# resolve paths to the modules it depends upon. E.g., do NOT do this:
+#
+#    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
+#
+
+# Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
+# is empty/not-set by default):
+exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"

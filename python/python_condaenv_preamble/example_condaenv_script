@@ -1,0 +1,4 @@
+#!/bin/bash
+# -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+PYTHON_CONDAENV_REQUIRED_PACKAGES="from%20bs4%20import%20BeautifulSoup|conda|beautifulsoup4"
+exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
