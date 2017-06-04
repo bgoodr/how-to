@@ -30,17 +30,4 @@ for additional justification.
 Usage
 =====
 
-Add the lines to a Bash script of the same name, sans the .py extension. For example:
-
-    #!/bin/bash
-    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="import%20matplotlib|conda|matplotlib"
-    . path_to_some_directory/python_condaenv_preamble "$0" "$@"
-
-This example will install the matplotlib package using conda, and
-verify it is installed by executing `import matplotlib`.
-
-PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES is a space-separated list of packages of the form:
-
-    import_statement|installer|package_name
-
-where installer can be one of "conda" or "pip".
+Read the comments at the top of the [python_condaenv_preamble](python_condaenv_preamble) script.

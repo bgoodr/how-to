@@ -6,15 +6,15 @@
 # User-customizable variables (set them in the environment; see their defaults later on):
 #
 #  PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR -- Directory above where the miniconda[23] directory
-#    will be installed
+#    will be installed.
 #
 #  PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION -- Identifies Python major version number to
-#    use in the condaenv
+#    use in the condaenv.
 #
 #  PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES -- Space-separated list of tuples
 #    of the form "import_statement|installer|package_name" that indicate
 #    what packages to install and which installer (pip, conda, etc.) to
-#    use
+#    use.
 #
 #  PYTHON_CONDAENV_INSTALL_CHECK -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
@@ -22,7 +22,7 @@
 #
 # PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
 #   installation output as it occurs. Otherwise, be silent about the
-#   installation unless an error occurs
+#   installation unless an error occurs.
 #
 # Example Usage:
 #
