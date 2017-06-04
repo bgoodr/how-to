@@ -72,7 +72,7 @@ def CreateGanttChart(fname):
 
     ax.invert_yaxis()
     fig.autofmt_xdate()
-    plt.savefig('gantt.svg')
+    plt.savefig(fname + '.svg')
     plt.show()
 
 
