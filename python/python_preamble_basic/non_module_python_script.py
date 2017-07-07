@@ -485,6 +485,24 @@ def main():
     print 'Right aligned example: x{0:>20}x'.format('foo')
     print 'Floating point format: {:.6f}'.format(12.1234)
 
+    # Dump out environment in a form that can be source into Bash(-compatible) scripts:
+    #
+    #   Exclude the awful PWD environment variable that when reapplied
+    #   causes great confusion with the pwd command who also sets PWD.
+    #
+    #   Exclude SHLVL which should be set by Bash shells.
+    #
+    excluded = set(["SHLVL", "PWD"])
+    for k, v in os.environ.items():
+        if "'" in v:
+            delim = '"'
+        else:
+            delim = "'"
+        if k in excluded:
+            continue
+        print "export {k}={delim}{v}{delim}".format(k=k, v=v, delim=delim)
+
+
     # --------------------------------------------------------------------------------
     # Reading from subprocesses:
     # --------------------------------------------------------------------------------
