@@ -26,6 +26,10 @@ server.
 Example Jupyter Notebooks
 ----------------------------------
 
+Clicking on these `.ipynb` files from within the GitHub pages seems to
+render them as Jupyter notebooks (my guess is that it is done similar
+to the [nbviewer](http://nbviewer.jupyter.org/)):
+
 * [basic_jupyter_help_tutorial.ipynb](basic_jupyter_help_tutorial.ipynb) -- A basic tutorial on getting direct info and help of python modules from within a Jupyter notebook.
 * [basic_jupyter_latex_tutorial.ipynb](basic_jupyter_latex_tutorial.ipynb) -- A basic tutorial on using Latex syntax inside a Jupyter notebook.
 * [basic_jupyter_scipy_tutorial.ipynb](basic_jupyter_scipy_tutorial.ipynb) -- A basic tutorial on using Jupyter to use the scipy modules.
