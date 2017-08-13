@@ -11,6 +11,7 @@ See subdirectories as follows:
 * [python_preamble_directory_relative_module](python_preamble_directory_relative_module/README.md) -- Example using directory relative modules.
 * [python_virtualenv_preamble](python_virtualenv_preamble/README.md) -- Preamble script that installs packages into a virtualenv and runs a .py script.
 * [python_virtualenv_setup](python_virtualenv_setup/README.md) -- Script to install a virtualenv.
+* [jupyter](jupyter/README.md) -- Jupyter Examples and Tutorials
 
 PEP8 Non-compliance
 ===================
