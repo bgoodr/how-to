@@ -15,6 +15,9 @@ import functools
 from datetime import datetime, timedelta
 import calendar
 import mmap
+import cPickle as pickle
+import pprint
+
 
 # How to run the debugger at a particular area of code:
 # import pdb
@@ -502,7 +505,6 @@ def main():
             continue
         print "export {k}={delim}{v}{delim}".format(k=k, v=v, delim=delim)
 
-
     # --------------------------------------------------------------------------------
     # Reading from subprocesses:
     # --------------------------------------------------------------------------------
@@ -636,6 +638,29 @@ def main():
         except argparse.ArgumentTypeError, e:
             # raise Exception, "%s [%d]" % (e.strerror, e.errno)
             print "The exception {}".format(e)
+
+    # --------------------------------------------------------------------------------
+    # Using cPickle:
+    # --------------------------------------------------------------------------------
+    if True:
+        data1 = {'a': [1, 2.0, 3, 4 + 6j],
+                 'b': ('string', u'Unicode string'),
+                 'c': None}
+        selfref_list = [1, 2, 3]
+        selfref_list.append(selfref_list)
+
+        file = '/tmp/pickled'
+        with open(file, "wb") as output:
+            # Pickle dictionary using protocol 0.
+            pickle.dump(data1, output)
+            # Pickle the list using the highest protocol available.
+            pickle.dump(selfref_list, output, -1)
+
+        with open(file, "rb") as pkl_file:
+            data1 = pickle.load(pkl_file)
+            pprint.pprint(data1)
+            data2 = pickle.load(pkl_file)
+            pprint.pprint(data2)
 
 
 if __name__ == '__main__':
