@@ -649,7 +649,6 @@ def main():
             def __str__(self):
                 return repr("{}:{}".format(self.line_num, self.message))
 
-
         class FileLineParseError(Exception):
             def __init__(self, message, file, line_num):
                 self.message = message
@@ -659,19 +658,18 @@ def main():
             def __str__(self):
                 return repr("{}:{}:{}".format(self.file, self.line_num, self.message))
 
-
         def process_some_file(file):
             try:
                 raise LineParseError("bla bla", 1002)
             except LineParseError as e:
                 raise FileLineParseError(e.message, file, e.line_num)
 
-
         file = "thefile"
         try:
             process_some_file(file)
         except FileLineParseError as e:
             print("got error: {}".format(e))
+
 
 if __name__ == '__main__':
     main()
