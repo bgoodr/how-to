@@ -637,6 +637,19 @@ def main():
             # raise Exception, "%s [%d]" % (e.strerror, e.errno)
             print "The exception {}".format(e)
 
+        # Custom exception classes: https://stackoverflow.com/a/6180231/257924
+        class ErrorWithCode(Exception):
+            def __init__(self, code):
+                self.code = code
+
+            def __str__(self):
+                return repr(self.code)
+
+        try:
+            raise ErrorWithCode(1000)
+        except ErrorWithCode as e:
+            print "Received error with code:", e.code
+
 
 if __name__ == '__main__':
     main()
