@@ -637,19 +637,41 @@ def main():
             # raise Exception, "%s [%d]" % (e.strerror, e.errno)
             print "The exception {}".format(e)
 
-        # Custom exception classes: https://stackoverflow.com/a/6180231/257924
-        class ErrorWithCode(Exception):
-            def __init__(self, code):
-                self.code = code
+    # --------------------------------------------------------------------------------
+    # Custom exception classes: https://stackoverflow.com/a/6180231/257924
+    # --------------------------------------------------------------------------------
+    if True:
+        class LineParseError(Exception):
+            def __init__(self, message, line_num):
+                self.message = message
+                self.line_num = line_num
 
             def __str__(self):
-                return repr(self.code)
+                return repr("{}:{}".format(self.line_num, self.message))
 
+
+        class FileLineParseError(Exception):
+            def __init__(self, message, file, line_num):
+                self.message = message
+                self.file = file
+                self.line_num = line_num
+
+            def __str__(self):
+                return repr("{}:{}:{}".format(self.file, self.line_num, self.message))
+
+
+        def process_some_file(file):
+            try:
+                raise LineParseError("bla bla", 1002)
+            except LineParseError as e:
+                raise FileLineParseError(e.message, file, e.line_num)
+
+
+        file = "thefile"
         try:
-            raise ErrorWithCode(1000)
-        except ErrorWithCode as e:
-            print "Received error with code:", e.code
-
+            process_some_file(file)
+        except FileLineParseError as e:
+            print("got error: {}".format(e))
 
 if __name__ == '__main__':
     main()
