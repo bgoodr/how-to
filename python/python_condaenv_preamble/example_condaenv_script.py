@@ -23,30 +23,30 @@ and they lived at the bottom of a well.</p>
 
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(html_doc, 'html.parser')
-print
+print '----'
 print(soup.prettify())
-print
+print '----'
 print soup.title
-print
+print '----'
 print soup.title.name
-print
+print '----'
 print soup.title.string
-print
+print '----'
 print soup.title.parent.name
-print
+print '----'
 print soup.p
-print
+print '----'
 print soup.p['class']
-print
+print '----'
 print soup.a
-print
+print '----'
 print soup.find_all('a')
-print
+print '----'
 print "<{}>".format(soup.find_all('a')[0])
 
-print
+print '----'
 print soup.find(id="link3")
-print
+print '----'
 
 for link in soup.find_all('a'):
     print(link.get('href'))
