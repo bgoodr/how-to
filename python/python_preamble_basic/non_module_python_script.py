@@ -661,6 +661,8 @@ def main():
             pprint.pprint(data1)
             data2 = pickle.load(pkl_file)
             pprint.pprint(data2)
+
+    # --------------------------------------------------------------------------------
     # Custom exception classes: https://stackoverflow.com/a/6180231/257924
     # --------------------------------------------------------------------------------
     if True:
