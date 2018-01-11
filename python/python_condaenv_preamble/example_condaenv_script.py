@@ -52,3 +52,17 @@ for link in soup.find_all('a'):
     print(link.get('href'))
 
 print(soup.get_text())
+
+# Tutorial: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-using-tag-names
+
+print '----'
+print soup.head
+print '----'
+print soup.title
+print '----'
+print('soup.body {}'.format(soup.body))
+print '----'
+print('soup.body.p {}'.format(soup.body.p))
+print '----'
+print('soup.body.b {}'.format(soup.body.b))
+print '----'
