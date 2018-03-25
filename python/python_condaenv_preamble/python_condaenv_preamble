@@ -12,9 +12,10 @@
 #    use in the condaenv.
 #
 #  PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES -- Space-separated list of tuples
-#    of the form "import_statement|installer|package_name" that indicate
+#    of the form "import_statement|installer|package_name|channel" that indicate
 #    what packages to install and which installer (pip, conda, etc.) to
-#    use.
+#    use. channel is specific to the conda install command (the -c option) that is
+#    needed for some packages, e.g:
 #
 #  PYTHON_CONDAENV_PREAMBLE_INSTALL -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
@@ -25,7 +26,7 @@
 #   installation output as it occurs. Otherwise, be silent about the
 #   installation unless an error occurs.
 #
-# Example Usage:
+# Example 1:
 #
 #    #!/bin/bash
 #    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="import%20matplotlib|conda|matplotlib"
@@ -60,6 +61,24 @@
 # This was done because some modules require complicated import
 # statements (e.g., the selenium module above is a good example of
 # that).
+#
+# Example 2:
+#
+# Using a channel:
+#
+#    #!/bin/bash
+#    # -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+#    #
+#    # Only install conda, the env, and packages within the env, when
+#    # PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1. By default, leave it
+#    # unset to avoid 4 seconds of checking logic each time we invoke the
+#    # script:
+#    #
+#    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
+#    # 
+#    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20apiclient.discovery%20import%20build|conda|google-api-python-client|conda-forge"
+#    . $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
+#
 
 # ================================================================================
 # Instead of having all wrapper scripts do the following:
@@ -200,8 +219,8 @@ then
     #
     # Split on vertical bar:
     #
-    unset import_package_statement installer package
-    eval $(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; installer=\"%s\"; package=\"%s\"\n", $1, $2, $3); }')
+    unset import_package_statement installer package channel
+    eval $(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; installer=\"%s\"; package=\"%s\"; channel=\"%s\"\n", $1, $2, $3, $4); }')
     if [ -z "$import_package_statement" -o -z "$installer" -o -z "$package" ]
     then
       echo "ERROR: PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES should be of the form \"import_package_statement1|installer1|package1 import_package_statement2|installer2|package2 ...\""
@@ -223,7 +242,15 @@ then
           package_existence=$(conda list -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -f $package | grep -v '^#')
           if [ -z "$package_existence" ]
           then
-            conda install -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
+            # Specify the channel when $channel is set:
+            channel_args=""
+            if [ -n "$channel" ]
+            then
+              channel_args="-c $channel"
+            fi
+
+            # Install the package:
+            conda install -y $channel_args -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           else
             conda update -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           fi
