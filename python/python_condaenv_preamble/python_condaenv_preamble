@@ -22,9 +22,9 @@
 #    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable. When set to
 #    install-only, just install.
 #
-# PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
-#   installation output as it occurs. Otherwise, be silent about the
-#   installation unless an error occurs.
+#  PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
+#    installation output as it occurs. Otherwise, be silent about the
+#    installation unless an error occurs.
 #
 # Example 1:
 #
