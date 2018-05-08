@@ -152,9 +152,6 @@ then
   fi
 fi
 
-# Get the new conda executable into the PATH:
-export PATH=$CONDA_INSTALL_DIR/bin:$PATH
-
 # Define the default condaenv:
 #
 #   Users can override the name of the environment by setting PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
@@ -168,42 +165,61 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
 #
 if [ -n "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
 then
-  #
-  # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
-  #
-  #   The goal here is to just clone the root environment. Individual
-  #   preamble scripts can install whatever packages they need
-  #   dynamically via the PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES environment
-  #   variable.
-  #
-  env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
-  if [ -z "$env_existence" ]
-  then
-    set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
-    (
-      set -x -e
-      cd $CONDA_INSTALL_DIR
-      conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
-    ) &> $log
-    if [ $? != 0 ]
+  (
+    # Get the new conda executable into the PATH, but only temparily, hence the outer () scope:
+    export PATH=$CONDA_INSTALL_DIR/bin:$PATH
+
+    #
+    # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
+    #
+    #   The goal here is to just clone the root environment. Individual
+    #   preamble scripts can install whatever packages they need
+    #   dynamically via the PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES environment
+    #   variable.
+    #
+    env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
+    if [ -z "$env_existence" ]
     then
-      cat_log
-      echo
-      echo "ERROR: Failed to create condaenv: $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
-      exit 1
+      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
+      (
+        set -x -e
+        cd $CONDA_INSTALL_DIR
+        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
+      ) &> $log
+      if [ $? != 0 ]
+      then
+        cat_log
+        echo
+        echo "ERROR: Failed to create condaenv: $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
+        exit 1
+      fi
     fi
-  fi
+  )
 fi
+
+#
+# Prior to activation, which will insert the env's into the PATH, add
+# insertion point for the path to conda so that it lands AFTER the
+# python in the conda env, not the main python that is in the same
+# directory as the conda executable. This is so that we can invoke
+# conda directly outside of this script framework.
+#
+export PATH=/tmp/for_python_condaenv_preamble_replacement:$PATH
 
 #
 # Activate the condaenv:
 #
-source activate $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
+source $CONDA_INSTALL_DIR/bin/activate $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
 if [ $? != 0 ]
 then
   echo "ERROR: Could not activate condaenv $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
   exit 1
 fi
+
+#
+# Replace the insertion point with the path to conda:
+#
+export PATH=$(echo "$PATH" | sed "s%/tmp/for_python_condaenv_preamble_replacement%$CONDA_INSTALL_DIR/bin%g")
 
 #
 # Optimization: Only do the package installation if
@@ -236,6 +252,8 @@ then
       (
         if [ $installer = "pip" ]
         then
+          # Alway upgrade pip as it is always asking to do so:
+          pip install --upgrade pip
           pip install --upgrade $package
         elif [ $installer = "conda" ]
         then
