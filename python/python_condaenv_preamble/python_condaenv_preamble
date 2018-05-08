@@ -167,6 +167,13 @@ if [ -n "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
 then
   (
     # Get the new conda executable into the PATH, but only temparily, hence the outer () scope:
+    #
+    #   We simply CANNOT insert $CONDA_INSTALL_DIR/bin into the PATH at all in
+    #   the outer scope because if we did, and the user uses pip, then the pip
+    #   in the $CONDA_INSTALL_DIR/bin directory will be picked up and NOT the
+    #   pip that is under the conda-env where the python lives. If that
+    #   happens, then it messes the installation up in very weird ways.
+    #
     export PATH=$CONDA_INSTALL_DIR/bin:$PATH
 
     #
@@ -198,15 +205,6 @@ then
 fi
 
 #
-# Prior to activation, which will insert the env's into the PATH, add
-# insertion point for the path to conda so that it lands AFTER the
-# python in the conda env, not the main python that is in the same
-# directory as the conda executable. This is so that we can invoke
-# conda directly outside of this script framework.
-#
-export PATH=/tmp/for_python_condaenv_preamble_replacement:$PATH
-
-#
 # Activate the condaenv:
 #
 source $CONDA_INSTALL_DIR/bin/activate $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
@@ -215,11 +213,6 @@ then
   echo "ERROR: Could not activate condaenv $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
   exit 1
 fi
-
-#
-# Replace the insertion point with the path to conda:
-#
-export PATH=$(echo "$PATH" | sed "s%/tmp/for_python_condaenv_preamble_replacement%$CONDA_INSTALL_DIR/bin%g")
 
 #
 # Optimization: Only do the package installation if
