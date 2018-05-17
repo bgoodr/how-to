@@ -245,8 +245,11 @@ then
       (
         if [ $installer = "pip" ]
         then
-          # Alway upgrade pip as it is always asking to do so:
+
+          # Always upgrade pip on the fly prior to using pip to upgrade the $package:
           pip install --upgrade pip
+
+          # Upgrade the package (which includes installing if it has not yet been installed):
           pip install --upgrade $package
         elif [ $installer = "conda" ]
         then
