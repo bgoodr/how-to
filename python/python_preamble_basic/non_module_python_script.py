@@ -107,6 +107,11 @@ def matchfirst(items, match_re, groupnum):
     return next(matchalliter(items, match_re, groupnum), None)
 
 
+def matchfirstindex(indexes, items, match_re):
+    """Return the index of indexes of the first item within items that matches the regular expression given by match_re."""
+    return next(itertools.ifilter(lambda index: match_re.search(items[index]), indexes), None)
+
+
 def demo_matchfirst():
     # Assume lines is constructed from some file using readlines above:
     lines = ["line {}".format(x) for x in range(0, 21)]
