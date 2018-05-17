@@ -278,10 +278,11 @@ then
         exit 1
       fi
 
-      if python -c "$exec_statement" &> /dev/null
+      if python -c "$exec_statement" &> $log
       then
         :
       else
+        echo "$exec_statement"
         cat_log
         echo
         echo "ERROR: Install of package $package failed. See above."
