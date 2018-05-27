@@ -92,22 +92,18 @@
 # located in various subdirectories:
 # ================================================================================
 
-set_log () {
-  if [ "$PYTHON_CONDAENV_PREAMBLE_VERBOSE" = 1 ]
+log=""
+set_log ()
+{
+  log="$1"
+  if [ "$PYTHON_CONDAENV_PREAMBLE_VERBOSE" != 1 ]
   then
-    log=/dev/stdout
-  else
-    log=$1
+    exec &> $log
   fi
 }
 
 cat_log () {
-  if [ "$PYTHON_CONDAENV_PREAMBLE_VERBOSE" = 1 ]
-  then
-    :
-  else
-    cat $log
-  fi
+  cat "$log"
 }
 
 #
@@ -136,13 +132,13 @@ then
   fi
   # This name of installer may need to be fiddled with for Mac but this works for Linux:
   installer=Miniconda${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}-latest-$(uname -s)-$(uname -m).sh
-  set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
-  (
+  ( # Scope for set_log
+    set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
     set -x -e
     cd $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
     wget https://repo.continuum.io/miniconda/$installer
     bash ./$installer -b -p $CONDA_INSTALL_DIR
-  ) &> $log
+  )
   if [ $? != 0 ]
   then
     cat_log
@@ -187,12 +183,12 @@ then
     env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
     if [ -z "$env_existence" ]
     then
-      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
-      (
+      ( # Scope for set_log
+        set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
         set -x -e
         cd $CONDA_INSTALL_DIR
         conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
-      ) &> $log
+      )
       if [ $? != 0 ]
       then
         cat_log
@@ -241,8 +237,8 @@ then
     then
       :
     else
-      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log.$$
-      (
+      ( # Scope for set_log
+        set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log.$$
         if [ $installer = "pip" ]
         then
 
@@ -272,7 +268,7 @@ then
           echo "ERROR: Invalid installer: \"$installer\""
           exit 1
         fi
-      ) &> $log
+      )
       if [ $? != 0 ]
       then
         cat_log
@@ -281,7 +277,7 @@ then
         exit 1
       fi
 
-      if python -c "$exec_statement" &> $log
+      if python -c "$exec_statement"
       then
         :
       else
