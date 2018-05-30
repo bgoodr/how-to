@@ -211,6 +211,16 @@ then
 fi
 
 #
+# Allow executing a subshell that has conda in the PATH:
+#
+if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = "with-conda" ]
+then
+  export PATH=$CONDA_INSTALL_DIR/bin:$PATH
+  $SHELL "$@"
+  exit $?
+fi
+   
+#
 # Optimization: Only do the package installation if
 # PYTHON_CONDAENV_PREAMBLE_INSTALL is set:
 #
