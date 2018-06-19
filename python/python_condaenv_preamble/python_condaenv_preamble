@@ -219,7 +219,9 @@ fi
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = "with-conda" ]
 then
   export PATH=$CONDA_INSTALL_DIR/bin:$PATH
-  $SHELL "$@"
+  # Just invoke the shell, do not pass $@ to it as that will cause
+  # recursion if we call it from scripts in the usual manner:
+  $SHELL
   exit $?
 fi
    
