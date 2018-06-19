@@ -103,7 +103,10 @@ set_log ()
 }
 
 cat_log () {
-  cat "$log"
+  if [ "$PYTHON_CONDAENV_PREAMBLE_VERBOSE" != 1 ]
+  then
+    cat "$log"
+  fi
 }
 
 #
