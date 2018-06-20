@@ -216,12 +216,14 @@ fi
 #
 # Allow executing a subshell that has conda in the PATH:
 #
+#   This is needed so that we can invoke scripts that have conda in
+#   the environment and can run python directly (e.g., rbt tools, etc.)
+#
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = "with-conda" ]
 then
   export PATH=$CONDA_INSTALL_DIR/bin:$PATH
-  # Just invoke the shell, do not pass $@ to it as that will cause
-  # recursion if we call it from scripts in the usual manner:
-  $SHELL
+  # Warning if you pass this the same script into $@ it will recurse.
+  $SHELL "$@"
   exit $?
 fi
    
