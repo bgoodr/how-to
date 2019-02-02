@@ -26,6 +26,13 @@
 #    installation output as it occurs. Otherwise, be silent about the
 #    installation unless an error occurs.
 #
+#  PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -- Users can override the name
+#    of the environment by setting PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
+#    in the environment before execution. A default is chosen if this
+#    is not set.
+#
+PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
+#
 # Example 1:
 #
 #    #!/bin/bash
