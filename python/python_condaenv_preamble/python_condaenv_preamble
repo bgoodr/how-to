@@ -125,20 +125,8 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR=${PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DI
 PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION:-2}
 # Arrange the miniconda installation directory to be release-specific just in case there is variation between releases as is typical:
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
-do_clone_root=1
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
-  # If we are installing the CONDA_INSTALL_DIR the first time, we need
-  # to avoid calling conda create with the "--clone root" option:
-  #
-  #   This is because of https://stackoverflow.com/a/49404515/257924 Otherwise, you
-  #   will get:
-  #   
-  #     The following packages cannot be cloned out of the root environment:
-  #      - conda-4.5.12-py37_0
-  #      - conda-env-2.6.0-1
-  #
-  do_clone_root=0
   if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
   then
     echo "ERROR: CONDA_INSTALL_DIR \"$CONDA_INSTALL_DIR\" does not exist as a directory. Set PYTHON_CONDAENV_PREAMBLE_INSTALL=1 and reinvoke to install it."
@@ -205,16 +193,22 @@ then
     env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
     if [ -z "$env_existence" ]
     then
-      conda_create_extra_args=""
-      if [ "$do_clone_root" = 1 ]
-      then
-        conda_create_extra_args="--clone root"
-      fi
       ( # Scope for set_log
         set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
         set -x -e
         cd $CONDA_INSTALL_DIR
-        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $conda_create_extra_args
+
+        # https://stackoverflow.com/a/49404515/257924 says --clone
+        # root is not needed but without it, the env directory is not
+        # populated (missing the bin directory). Sigh. We do still
+        # get this error:
+        # 
+        #   The following packages cannot be cloned out of the root environment:
+        #    - conda-4.5.12-py37_0
+        #    - conda-env-2.6.0-1
+        #
+        # It is a mystery.
+        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
 
         # I find it odd that even the above conda create still leaves us with this error:
         #
