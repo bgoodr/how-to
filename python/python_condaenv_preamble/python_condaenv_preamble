@@ -31,8 +31,6 @@
 #    in the environment before execution. A default is chosen if this
 #    is not set.
 #
-PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
-#
 # Example 1:
 #
 #    #!/bin/bash
@@ -127,8 +125,20 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR=${PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DI
 PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION:-2}
 # Arrange the miniconda installation directory to be release-specific just in case there is variation between releases as is typical:
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
+do_clone_root=1
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
+  # If we are installing the CONDA_INSTALL_DIR the first time, we need
+  # to avoid calling conda create with the "--clone root" option:
+  #
+  #   This is because of https://stackoverflow.com/a/49404515/257924 Otherwise, you
+  #   will get:
+  #   
+  #     The following packages cannot be cloned out of the root environment:
+  #      - conda-4.5.12-py37_0
+  #      - conda-env-2.6.0-1
+  #
+  do_clone_root=0
   if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
   then
     echo "ERROR: CONDA_INSTALL_DIR \"$CONDA_INSTALL_DIR\" does not exist as a directory. Set PYTHON_CONDAENV_PREAMBLE_INSTALL=1 and reinvoke to install it."
@@ -160,10 +170,12 @@ fi
 
 # Define the default condaenv:
 #
-#   Users can override the name of the environment by setting PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
-#   in the environment before execution
+#   Make the environment by default be dependent upon the major
+#   version because you cannot comingle Python2 modules with Python3
+#   as far as I can tell, so they need to be mutually exclusive. So
+#   let's just mandate that from the beginning.
 #
-PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-env1}
+PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-envpython${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}}
 
 #
 # Optimization: Only do the env existence check if
@@ -193,11 +205,29 @@ then
     env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
     if [ -z "$env_existence" ]
     then
+      conda_create_extra_args=""
+      if [ "$do_clone_root" = 1 ]
+      then
+        conda_create_extra_args="--clone root"
+      fi
       ( # Scope for set_log
         set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
         set -x -e
         cd $CONDA_INSTALL_DIR
-        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
+        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $conda_create_extra_args
+
+        # I find it odd that even the above conda create still leaves us with this error:
+        #
+        #   ==> WARNING: A newer version of conda exists. <==
+        #     current version: 4.5.12
+        #     latest version: 4.6.2
+        #  
+        #   Please update conda by running
+        #  
+        #       $ conda update -n base -c defaults conda
+        #
+        # So then we will do that:
+        conda update -n base -c defaults conda
       )
       if [ $? != 0 ]
       then
