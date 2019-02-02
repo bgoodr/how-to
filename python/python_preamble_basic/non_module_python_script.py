@@ -17,6 +17,7 @@ import calendar
 import mmap
 import cPickle as pickle
 import pprint
+import hashlib
 
 
 # How to run the debugger at a particular area of code:
@@ -150,6 +151,43 @@ def change_pwd(new_dir):
         yield
     finally:
         os.chdir(savedir)
+
+
+class Picklize:
+    """Similar to Memoize in https://stackoverflow.com/a/1988826/257924 but pickles the result to disk."""
+
+    def __init__(self, f):
+        self.f = f
+
+    def __call__(self, *args):
+        sha1 = hashlib.sha1()
+        sha1.update(str(args))
+        hash = sha1.hexdigest()
+        result_file = '/tmp/' + hash
+        result = None
+        if not os.path.exists(result_file):
+            result = self.f(*args)
+            with open(result_file, 'w') as f:
+                pickle.dump(result, f)
+        else:
+            with open(result_file, 'r') as f:
+                result = pickle.load(f)
+        return result
+
+
+@Picklize
+def factorial(k):
+    print("got k {}".format(k))
+    if k < 2:
+        return 1
+    return k * factorial(k - 1)
+
+
+# print("//////////")
+# f1 = factorial(6)
+# print("\n{}\nf1\n{}".format('-' * 80, f1))
+# f2 = factorial(6)
+# print("\n{}\nf2\n{}".format('-' * 80, f2))
 
 
 # TODO: Moving the print_file_line function into debug_utils.py, and
@@ -702,4 +740,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(0 if main() else 1)  # Return non-zero exit codes upon failure

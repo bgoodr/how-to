@@ -1,0 +1,11 @@
+#!/bin/bash
+# -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20scipy%20import%20optimize|conda|scipy"
+# Only install conda, the env, and packages within the env, when
+# PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1. By default, leave it
+# unset to avoid 4 seconds of checking logic each time we invoke the
+# script:
+#
+#  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
+# 
+exec "$(dirname $0)/../python_condaenv_preamble/python_condaenv_preamble" "$0" "$@"
