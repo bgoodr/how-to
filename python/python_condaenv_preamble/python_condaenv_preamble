@@ -273,6 +273,13 @@ if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = "with-conda" ]
 then
   export PATH=$CONDA_INSTALL_DIR/bin:$PATH
   # Warning if you pass this the same script into $@ it will recurse.
+  #
+  # Example:
+  #
+  #   PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=3 \
+  #   PYTHON_CONDAENV_PREAMBLE_INSTALL=with-conda \
+  #   ./python_condaenv_preamble -c 'conda env list'
+  #
   $SHELL "$@"
   exit $?
 fi
