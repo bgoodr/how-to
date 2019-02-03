@@ -123,6 +123,16 @@ cat_log () {
 
 PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR=${PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR:-$HOME/conda}
 PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION:-2}
+
+# Define the default condaenv:
+#
+#   Make the environment by default be dependent upon the major
+#   version because you cannot comingle Python2 modules with Python3
+#   as far as I can tell, so they need to be mutually exclusive. So
+#   let's just mandate that from the beginning.
+#
+PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-envpython${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}}
+
 # Arrange the miniconda installation directory to be release-specific just in case there is variation between releases as is typical:
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
 if [ ! -d $CONDA_INSTALL_DIR ]
@@ -173,15 +183,6 @@ then
     exit 1
   fi
 fi
-
-# Define the default condaenv:
-#
-#   Make the environment by default be dependent upon the major
-#   version because you cannot comingle Python2 modules with Python3
-#   as far as I can tell, so they need to be mutually exclusive. So
-#   let's just mandate that from the beginning.
-#
-PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-envpython${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}}
 
 #
 # Optimization: Only do the env existence check if
