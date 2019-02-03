@@ -138,13 +138,31 @@ then
     echo "ERROR: Cannot create $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR a directory."
     exit 1
   fi
+
   # This name of installer may need to be fiddled with for Mac but this works for Linux:
   installer=Miniconda${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}-latest-$(uname -s)-$(uname -m).sh
+  if [ ! -f $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer ]
+  then
+    ( # Scope for set_log
+      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
+      set -x -e
+      cd $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
+      wget https://repo.continuum.io/miniconda/$installer
+    )
+    if [ $? != 0 ]
+    then
+      cat_log
+      echo
+      echo "ERROR: Failed to download root conda environment. See above output for errors."
+      exit 1
+    fi
+  fi
+
+  # Execute the installer:
   ( # Scope for set_log
     set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
     set -x -e
     cd $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
-    wget https://repo.continuum.io/miniconda/$installer
     bash ./$installer -b -p $CONDA_INSTALL_DIR
   )
   if [ $? != 0 ]
