@@ -306,7 +306,9 @@ then
       exit 1
     fi
 
-    exec_statement="import urllib; script = urllib.unquote(\"$import_package_statement\"); exec(script)"
+    # From https://stackoverflow.com/a/8628168/257924 use "from urllib.parse import unquote":
+    #     Old for python2: exec_statement="import urllib; script = urllib.unquote(\"$import_package_statement\"); exec(script)"
+    exec_statement="from urllib.parse import unquote; script = unquote(\"$import_package_statement\"); exec(script)"
     if python -c "$exec_statement" &> /dev/null
     then
       :
