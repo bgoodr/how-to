@@ -341,8 +341,6 @@ def example_time_calculations():
     # print 'datetime.fromtimestamp(os.stat("afile").st_mtime) {}'.format(datetime.fromtimestamp(os.stat("afile").st_mtime))
 
 
-
-
 def example_pytz():
     """Example of pytz usage.
 
@@ -476,6 +474,15 @@ def datetime_strptime_dwim(dt_str_with_3_letter_zone, default_3_letter_timezone=
 # print datetime_tz3_to_olson_tz()
 # example_pytz()
 
+def wash(args):
+    """Handler for the wash operation."""
+    print("\n{}\nargs\n{}".format('-' * 80, args))
+
+
+def scrub(args):
+    """Handler for the scrub operation."""
+    print("\n{}\nargs\n{}".format('-' * 80, args))
+
 
 description = r"""
 the_name_of_script_goes_here -- Short description line goes here
@@ -497,8 +504,31 @@ def main():
         prog=os.path.basename(os.path.splitext(sys.argv[0])[0]),  # Avoid showing the .py file extension in the usage help
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-theint", type=int,
-                        help="some integer")
+
+    # Create subparsers for subcommands:
+    subparsers = parser.add_subparsers(help='The sub-commands', dest='subcommand')
+
+    # Parser for the wash command:
+    parser_wash = subparsers.add_parser(
+        'wash',
+        description='Wash the stuff.')
+    parser_wash.add_argument('-v', '--verbose',
+                             help='Show internal operation.',
+                             action="store_true")
+    parser_wash.set_defaults(func=wash)
+
+    # Parser for the scrub command:
+    parser_scrub = subparsers.add_parser(
+        'scrub',
+        description='Scrub the stuff.'
+    )
+    parser_scrub.add_argument('-d', '--directory',
+                              help='Path to a directory to scrub.',
+                              required=True)
+    parser_scrub.set_defaults(func=scrub)
+
+    parser_scrub.add_argument("-theint", type=int,
+                              help="some integer")
 
     # Warning: because of this nargs='+' item below, this is valid:
     #
@@ -512,21 +542,23 @@ def main():
     #            [-simplearg SIMPLEARG] [-v] lonearg
     #     non_module_python_script.py: error: too few arguments
     #
-    parser.add_argument('-runmod', nargs='+',
-                        help='runner and its arguments')
-    parser.add_argument('-simplearg', help='a simple arg')
+    parser_scrub.add_argument('-runmod', nargs='+',
+                              help='runner and its arguments')
+    parser_scrub.add_argument('-simplearg', help='a simple arg')
 
     # Demonstrate a mutually exclusive group:
-    action = parser.add_mutually_exclusive_group(required=False)
+    action = parser_scrub.add_mutually_exclusive_group(required=False)
     action.add_argument('--option1', action='store_true', help='The first option')
     action.add_argument('--option2', action='store_true', help='The second option')
     action.add_argument('--option3', action='store_true', help='The third option')
 
-    parser.add_argument('lonearg', help='a lone arg')
+    parser_scrub.add_argument('lonearg', help='a lone arg')
     # -v is an example of an argument that does not take a value
     # (http://stackoverflow.com/a/5271692/257924):
-    parser.add_argument("-v", "--verbose", help="increase output verbosity",
-                        action="store_true")
+    parser_scrub.add_argument("-v", "--verbose", help="increase output verbosity",
+                              action="store_true")
+
+    # Parse the args and call whatever function was selected:
     args = parser.parse_args(sys.argv[1:])
 
     # Call a function that demonstrates print_file_line:
