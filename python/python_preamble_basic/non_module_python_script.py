@@ -288,22 +288,31 @@ def example_time_calculations():
     # print 'datetime.fromtimestamp(os.stat("afile").st_mtime) {}'.format(datetime.fromtimestamp(os.stat("afile").st_mtime))
 
 
-# Download and import pytz module:
-import urllib.request
-import urllib.error
-import urllib.parse
-tmp_compressed_path = "/tmp/pytz-because-python-does-not-include-it-when-it-really-should.tar.gz"
-if not os.path.isfile(tmp_compressed_path):
-    downloads_f = urllib.request.urlopen('https://pypi.python.org/pypi/pytz#downloads')
-    lines = [line.decode().rstrip() for line in downloads_f]
-    compressed_file = matchfirst(lines, r'<a href="(http[^"]*\.tar\.gz[^"]*)', 1)
-    compressed_download_f = urllib.request.urlopen(compressed_file)
-    with open(tmp_compressed_path, "wb") as tmp_compressed_f:
-        tmp_compressed_f.write(compressed_download_f.read())
-if sys.path[0] != tmp_compressed_path:
-    sys.path.insert(0, tmp_compressed_path)
-    import pdb
-    pdb.set_trace()
+# The following commented-out code was a failed attempt at dynamically
+# installing pytz into /tmp It doesn't work because there is a
+# zipimport module that is used dynamically behind the scenes by
+# Python, But I discovered that
+# https://pypi.python.org/pypi/pytz#downloads only provides the
+# .tar.gz files, which are NOT recognized by Python I have NO CHOICE
+# but to do it their way which forces me to have to install pytz using
+# some installer, pip, virtualenvs. etc. which means that this file.
+#
+# # Download and import pytz module:
+# import urllib.request
+# import urllib.error
+# import urllib.parse
+# tmp_compressed_path = "/tmp/pytz-because-python-does-not-include-it-when-it-really-should.tar.gz"
+# if not os.path.isfile(tmp_compressed_path):
+#     downloads_f = urllib.request.urlopen('https://pypi.python.org/pypi/pytz#downloads')
+#     lines = [line.decode().rstrip() for line in downloads_f]
+#     compressed_file = matchfirst(lines, r'<a href="(http[^"]*\.tar\.gz[^"]*)', 1)
+#     compressed_download_f = urllib.request.urlopen(compressed_file)
+#     with open(tmp_compressed_path, "wb") as tmp_compressed_f:
+#         tmp_compressed_f.write(compressed_download_f.read())
+# if sys.path[0] != tmp_compressed_path:
+#     sys.path.insert(0, tmp_compressed_path)
+#     import pdb
+#     pdb.set_trace()
 import pytz
 
 
