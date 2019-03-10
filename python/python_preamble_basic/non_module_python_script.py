@@ -10,12 +10,11 @@ import time
 from contextlib import contextmanager
 import subprocess
 from inspect import currentframe, getframeinfo
-import itertools
 import functools
 from datetime import datetime, timedelta
 import calendar
 import mmap
-import cPickle as pickle
+import pickle as pickle
 import pprint
 import hashlib
 
@@ -96,7 +95,7 @@ def matchalliter(items, match_re, groupnum):
     """Returns an iterator that matches all items in the regular expression given by match_re.
 
     Treats match_re and groupnum the same as matchgroups"""
-    return itertools.ifilter(None, itertools.imap(functools.partial(matchgroups, match_re, groupnum), items))
+    return filter(None, map(functools.partial(matchgroups, match_re, groupnum), items))
 
 
 def matchfirst(items, match_re, groupnum):
@@ -110,17 +109,17 @@ def matchfirst(items, match_re, groupnum):
 
 def matchfirstindex(indexes, items, match_re):
     """Return the index of indexes of the first item within items that matches the regular expression given by match_re."""
-    return next(itertools.ifilter(lambda index: match_re.search(items[index]), indexes), None)
+    return next(filter(lambda index: match_re.search(items[index]), indexes), None)
 
 
 def demo_matchfirst():
     # Assume lines is constructed from some file using readlines above:
     lines = ["line {}".format(x) for x in range(0, 21)]
     lines[10] = "TIMESTAMP 2017-05-11 15:28"
-    print 'lines {}'.format(lines)
+    print('lines {}'.format(lines))
     timestamp_re = r'^TIMESTAMP (.*)'
     timestamp = matchfirst(lines, timestamp_re, 1)
-    print 'timestamp {}'.format(timestamp)
+    print('timestamp {}'.format(timestamp))
 
 
 # Example of contextmanager (http://tinyurl.com/llogvwu):
@@ -134,7 +133,7 @@ def time_print(task_name):
     try:
         yield
     finally:
-        print task_name, "took", time.time() - t, "seconds."
+        print(task_name, "took", time.time() - t, "seconds.")
 
 
 @contextmanager
@@ -207,16 +206,16 @@ def print_file_line(*args):
     mode buffers).
     """
     cf = currentframe()
-    print "{}:{}: {}".format(getframeinfo(cf).filename, cf.f_back.f_lineno, " ".join([str(x) for x in args]))
+    print("{}:{}: {}".format(getframeinfo(cf).filename, cf.f_back.f_lineno, " ".join([str(x) for x in args])))
 
 
 def demo_print_file_line():
     """Demonstrate print_file_line."""
-    print "got it"
+    print("got it")
     # print_file_line("got here")
-    print "got it"
+    print("got it")
     print_file_line("got", ["a", "b", "c"])
-    print "got it"
+    print("got it")
     print_file_line("got", ["a", "b", "c", "d"])
 
 
@@ -244,16 +243,16 @@ def get_timestamp_from_datetime(dt, is_local_time=True):
 
 def demo_get_timestamp_from_datetime():
     xxx_dt1 = datetime.now()
-    print 'xxx_dt1       {}'.format(xxx_dt1)
+    print('xxx_dt1       {}'.format(xxx_dt1))
     xxx_string1 = '{}'.format(xxx_dt1.strftime('%Y-%m-%d %H:%M:%S'))
-    print 'xxx_string1   {}'.format(xxx_string1)
+    print('xxx_string1   {}'.format(xxx_string1))
     fmt = '%Y-%m-%d %H:%M:%S'
     xxx_dt2 = datetime.strptime(xxx_string1, fmt)
-    print 'xxx_dt2       {}'.format(xxx_dt2)
+    print('xxx_dt2       {}'.format(xxx_dt2))
     xxx_timestamp = get_timestamp_from_datetime(xxx_dt2, is_local_time=True)
-    print 'xxx_timestamp {}'.format(xxx_timestamp)
+    print('xxx_timestamp {}'.format(xxx_timestamp))
     xxx_dt3 = datetime.fromtimestamp(xxx_timestamp)
-    print 'xxx_dt3       {}'.format(xxx_dt3)
+    print('xxx_dt3       {}'.format(xxx_dt3))
     assert xxx_dt2 == xxx_dt3
 
 
@@ -266,23 +265,23 @@ def example_time_calculations():
     http://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python
     http://stackoverflow.com/a/8778548/257924
     """
-    print
+    print()
     start_time = "2017-05-09 21:53:55"
     format = "%Y-%m-%d %H:%M:%S"
     # dt0 will be a UTC date (not using pytz here so these are naive dates without timezones because my intent is to just do date subtraction to get timedeltas):
     dt0 = datetime.strptime(start_time, format)
-    print 'dt0 {}'.format(dt0)
-    print 'dt0.timetuple() {}'.format(dt0.timetuple())
+    print('dt0 {}'.format(dt0))
+    print('dt0.timetuple() {}'.format(dt0.timetuple()))
     # 1494392035 should be a PDT localtime timestamp corresponding to 2017-05-09 21:53:55 in UTC:
-    print 'datetime.fromtimestamp(1494392035)    {}'.format(datetime.fromtimestamp(1494392035))
-    print 'datetime.utcfromtimestamp(1494392035) {}'.format(datetime.utcfromtimestamp(1494392035))
+    print('datetime.fromtimestamp(1494392035)    {}'.format(datetime.fromtimestamp(1494392035)))
+    print('datetime.utcfromtimestamp(1494392035) {}'.format(datetime.utcfromtimestamp(1494392035)))
     timestamp = int((dt0 - datetime(1970, 1, 1)).total_seconds())
-    print 'timestamp {}'.format(timestamp)
-    print 'datetime.utcfromtimestamp(timestamp) {}'.format(datetime.utcfromtimestamp(timestamp))
+    print('timestamp {}'.format(timestamp))
+    print('datetime.utcfromtimestamp(timestamp) {}'.format(datetime.utcfromtimestamp(timestamp)))
     t0 = datetime.strptime("2017-05-11 06:20:00", format)
     t1 = datetime.strptime("2017-05-11 07:20:00", format)
     d = t1 - t0
-    print int(d.total_seconds())
+    print(int(d.total_seconds()))
     # # Show how to get modification timestamp from file:
     # print 'os.stat("afile").st_mtime {:.06f}'.format(os.stat("afile").st_mtime)
     # print subprocess.check_output("find afile -printf \"%p %T@\\n\"; ls -ld afile", shell=True)
@@ -290,17 +289,21 @@ def example_time_calculations():
 
 
 # Download and import pytz module:
-import urllib2
-tmpzip_path = "/tmp/pytz-because-python-does-not-include-it-when-it-really-should.zip"
+import urllib.request
+import urllib.error
+import urllib.parse
+tmpzip_path = "/tmp/pytz-because-python-does-not-include-it-when-it-really-should.tar.gz"
 if not os.path.isfile(tmpzip_path):
-    downloads_f = urllib2.urlopen('https://pypi.python.org/pypi/pytz#downloads')
-    lines = [line.rstrip() for line in downloads_f]
-    zip_file = matchfirst(lines, r'<a href="(http[^"]*\.zip[^"]*)', 1)
-    zip_download_f = urllib2.urlopen(zip_file)
-    with open(tmpzip_path, "w") as tmp_zip_f:
-        tmp_zip_f.write(zip_download_f.read())
+    downloads_f = urllib.request.urlopen('https://pypi.python.org/pypi/pytz#downloads')
+    lines = [line.decode().rstrip() for line in downloads_f]
+    compressed_file = matchfirst(lines, r'<a href="(http[^"]*\.tar\.gz[^"]*)', 1)
+    compressed_download_f = urllib.request.urlopen(compressed_file)
+    with open(tmpzip_path, "wb") as tmp_zip_f:
+        tmp_zip_f.write(compressed_download_f.read())
 if sys.path[0] != tmpzip_path:
     sys.path.insert(0, tmpzip_path)
+    import pdb
+    pdb.set_trace()
 import pytz
 
 
@@ -317,78 +320,78 @@ def example_pytz():
     """
     from pytz import timezone
     utc = pytz.utc
-    print 'utc {}'.format(utc)
-    print 'utc.zone {}'.format(utc.zone)
+    print('utc {}'.format(utc))
+    print('utc.zone {}'.format(utc.zone))
     eastern = timezone('US/Eastern')
-    print 'eastern {}'.format(eastern)
+    print('eastern {}'.format(eastern))
     amsterdam = timezone('Europe/Amsterdam')
-    print 'amsterdam {}'.format(amsterdam)
+    print('amsterdam {}'.format(amsterdam))
     fmt = '%Y-%m-%d %H:%M:%S %Z%z'
     loc_dt = eastern.localize(datetime(2002, 10, 27, 6, 0, 0))
-    print 'loc_dt {}'.format(loc_dt)
-    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    print('loc_dt {}'.format(loc_dt))
+    print('loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt)))
     ams_dt = loc_dt.astimezone(amsterdam)
-    print 'ams_dt.strftime(fmt) {}'.format(ams_dt.strftime(fmt))
+    print('ams_dt.strftime(fmt) {}'.format(ams_dt.strftime(fmt)))
     utc_dt = datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc)
     loc_dt = utc_dt.astimezone(eastern)
-    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    print('loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt)))
     before = loc_dt - timedelta(minutes=10)
-    print 'before.strftime(fmt) {}'.format(before.strftime(fmt))
+    print('before.strftime(fmt) {}'.format(before.strftime(fmt)))
     utc_dt = utc.localize(datetime.utcfromtimestamp(1143408899))
-    print 'utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt))
+    print('utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt)))
     au_tz = timezone('Australia/Sydney')
     au_dt = utc_dt.astimezone(au_tz)
-    print 'au_dt.strftime(fmt) {}'.format(au_dt.strftime(fmt))
+    print('au_dt.strftime(fmt) {}'.format(au_dt.strftime(fmt)))
     # pdt_tz = timezone('PDT')
     # print 'pdt_tz {}'.format(pdt_tz)
     uspac_tz = timezone('US/Pacific')
-    print 'uspac_tz {}'.format(uspac_tz)
-    print
-    print "Choose a UTC date that we know will be PDT:"
+    print('uspac_tz {}'.format(uspac_tz))
+    print()
+    print("Choose a UTC date that we know will be PDT:")
     utc_dt = datetime(2002, 10, 27, 6, 0, 0, tzinfo=utc)
-    print 'utc_dt {}'.format(utc_dt)
+    print('utc_dt {}'.format(utc_dt))
     uspac_dt = utc_dt.astimezone(uspac_tz)
-    print 'uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt))
-    print
-    print "Choose a UTC date that we know will be PST:"
+    print('uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt)))
+    print()
+    print("Choose a UTC date that we know will be PST:")
     utc_dt = datetime(2002, 12, 27, 6, 0, 0, tzinfo=utc)
-    print 'utc_dt {}'.format(utc_dt)
+    print('utc_dt {}'.format(utc_dt))
     uspac_dt = utc_dt.astimezone(uspac_tz)
-    print 'uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt))
-    print
-    print "Try strptime and strftime to include something similar to a timezone indicator:"
+    print('uspac_dt.strftime(fmt) {}'.format(uspac_dt.strftime(fmt)))
+    print()
+    print("Try strptime and strftime to include something similar to a timezone indicator:")
     # http://stackoverflow.com/a/14763408/257924 says:
     #   "You can format a timezone as a 3-letter abbreviation, but you can't parse it back from that"
     # So, see datetime_tz3_to_olson_tz below.
     fmt = '%Y-%m-%d %H:%M:%S'
     d = datetime.now(pytz.timezone("America/New_York"))
     dtz_string = d.strftime(fmt) + ' ' + "America/New_York"
-    print 'dtz_string {}'.format(dtz_string)
+    print('dtz_string {}'.format(dtz_string))
     d_string, tz_string = dtz_string.rsplit(' ', 1)
-    print 'd_string {}'.format(d_string)
-    print 'tz_string {}'.format(tz_string)
+    print('d_string {}'.format(d_string))
+    print('tz_string {}'.format(tz_string))
     d2 = datetime.strptime(d_string, fmt)
-    print 'd2 {}'.format(d2)
+    print('d2 {}'.format(d2))
     tz2 = pytz.timezone(tz_string)
-    print 'tz2 {}'.format(tz2)
-    print 'dtz_string {}'.format(dtz_string)
-    print d2.strftime(fmt) + ' ' + tz_string
-    print
-    print "How to convert from localtime to some other timezones: http://stackoverflow.com/a/13346065"
+    print('tz2 {}'.format(tz2))
+    print('dtz_string {}'.format(dtz_string))
+    print(d2.strftime(fmt) + ' ' + tz_string)
+    print()
+    print("How to convert from localtime to some other timezones: http://stackoverflow.com/a/13346065")
     pacific = pytz.timezone('US/Pacific')
-    print 'pacific {}'.format(pacific)
+    print('pacific {}'.format(pacific))
     fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-    loc_dt = pacific.localize(datetime(2017, 05, 11, 21, 57, 0))
-    print 'loc_dt {}'.format(loc_dt)
-    print 'loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt))
+    loc_dt = pacific.localize(datetime(2017, 0o5, 11, 21, 57, 0))
+    print('loc_dt {}'.format(loc_dt))
+    print('loc_dt.strftime(fmt) {}'.format(loc_dt.strftime(fmt)))
     utc_dt = loc_dt.astimezone(pytz.UTC)
-    print 'utc_dt {}'.format(utc_dt)
-    print 'utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt))
+    print('utc_dt {}'.format(utc_dt))
+    print('utc_dt.strftime(fmt) {}'.format(utc_dt.strftime(fmt)))
     mountain = pytz.timezone('US/Mountain')
-    print 'mountain {}'.format(mountain)
+    print('mountain {}'.format(mountain))
     mountain_dt = loc_dt.astimezone(mountain)
-    print 'mountain_dt {}'.format(mountain_dt)
-    print 'mountain_dt.strftime(fmt) {}'.format(mountain_dt.strftime(fmt))
+    print('mountain_dt {}'.format(mountain_dt))
+    print('mountain_dt.strftime(fmt) {}'.format(mountain_dt.strftime(fmt)))
 
 
 def datetime_tz3_to_olson_tz():
@@ -494,20 +497,20 @@ def main():
     # Call a function that demonstrates print_file_line:
     demo_print_file_line()
 
-    print 'args.runmod {0}'.format(args.runmod)
-    print 'args.simplearg {0}'.format(args.simplearg)
-    print 'args.lonearg {0}'.format(args.lonearg)
-    print 'args.theint {0}'.format(args.theint)
-    print 'args.option1 {0}'.format(args.option1)
-    print 'args.option2 {0}'.format(args.option2)
-    print 'args.option3 {0}'.format(args.option3)
+    print('args.runmod {0}'.format(args.runmod))
+    print('args.simplearg {0}'.format(args.simplearg))
+    print('args.lonearg {0}'.format(args.lonearg))
+    print('args.theint {0}'.format(args.theint))
+    print('args.option1 {0}'.format(args.option1))
+    print('args.option2 {0}'.format(args.option2))
+    print('args.option3 {0}'.format(args.option3))
 
     # --------------------------------------------------------------------------------
     # Lists:
     # --------------------------------------------------------------------------------
     thelist = ["foo", "bar"]
     thejoinedstring = " ".join(thelist)
-    print "thejoinedstring<" + thejoinedstring + ">"
+    print("thejoinedstring<" + thejoinedstring + ">")
 
     # --------------------------------------------------------------------------------
     # Environment variables:
@@ -516,20 +519,20 @@ def main():
     env = "SOME_VAR||unset"
     # env = "SOME_VAR|var"
     vals = env.split('|')
-    print 'vals' + str(vals)
+    print('vals' + str(vals))
     if len(vals) == 3:
         var = vals[0]
-        print "Unsetting environment variable:", var
+        print("Unsetting environment variable:", var)
         if var in os.environ:
             del os.environ[var]
     else:
         var, val = vals
-        print "Setting environment variable: {0}={1}".format(var, val)
+        print("Setting environment variable: {0}={1}".format(var, val))
         os.environ[var] = val
 
-    print 'Left aligned example:  x{0:<20}x'.format('foo')
-    print 'Right aligned example: x{0:>20}x'.format('foo')
-    print 'Floating point format: {:.6f}'.format(12.1234)
+    print('Left aligned example:  x{0:<20}x'.format('foo'))
+    print('Right aligned example: x{0:>20}x'.format('foo'))
+    print('Floating point format: {:.6f}'.format(12.1234))
 
     # Dump out environment in a form that can be source into Bash(-compatible) scripts:
     #
@@ -539,14 +542,14 @@ def main():
     #   Exclude SHLVL which should be set by Bash shells.
     #
     excluded = set(["SHLVL", "PWD"])
-    for k, v in os.environ.items():
+    for k, v in list(os.environ.items()):
         if "'" in v:
             delim = '"'
         else:
             delim = "'"
         if k in excluded:
             continue
-        print "export {k}={delim}{v}{delim}".format(k=k, v=v, delim=delim)
+        print("export {k}={delim}{v}{delim}".format(k=k, v=v, delim=delim))
 
     # --------------------------------------------------------------------------------
     # Reading from subprocesses:
@@ -566,7 +569,7 @@ def main():
     # not each line:
     #
     if False:
-        print 'Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924'
+        print('Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924')
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdin=subprocess.PIPE,
@@ -574,15 +577,15 @@ def main():
                              stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         for stdout_line in stdout:
-            print 'stdout_line=="{}"'.format(stdout_line)
+            print('stdout_line=="{}"'.format(stdout_line))
         for stderr_line in stderr:
-            print 'stderr_line=="{}"'.format(stderr_line)
+            print('stderr_line=="{}"'.format(stderr_line))
     #
     # This variation works.
     #   See http://stackoverflow.com/a/17698359/257924
     #
     if True:
-        print 'Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924'
+        print('Example: Reading stdout and stderr from a process based upon http://stackoverflow.com/a/17698359/257924')
         # shell=True as otherwise "ls ..." raises exception of "no such file
         # or directory":
         p = subprocess.Popen(cmd,
@@ -595,16 +598,16 @@ def main():
         #
         with p.stdout:
             for stdout_line in iter(p.stdout.readline, b''):
-                print 'stdout_line=="{}"'.format(stdout_line)
+                print('stdout_line=="{}"'.format(stdout_line))
         #
         # Read all of stderr:
         #
         with p.stderr:
             for stderr_line in iter(p.stderr.readline, b''):
-                print 'stderr_line=="{}"'.format(stderr_line)
+                print('stderr_line=="{}"'.format(stderr_line))
         p.wait()  # wait for the subprocess to exit
 
-        print "Example: Simplified Reading combined stdout and stderr from a process."
+        print("Example: Simplified Reading combined stdout and stderr from a process.")
         p = subprocess.Popen(cmd,
                              shell=True,
                              stdout=subprocess.PIPE,
@@ -618,16 +621,16 @@ def main():
         with p.stdout:
             for line in iter(p.stdout.readline, b''):
                 line = line.rstrip()
-                print line
+                print(line)
         p.wait()  # wait for the subprocess to exit and set return code
-        print "exit code: {}".format(p.returncode)
+        print("exit code: {}".format(p.returncode))
 
     # --------------------------------------------------------------------------------
     # Reading/writing from files and matching on regular expressions:
     # --------------------------------------------------------------------------------
 
     if True:
-        print "Example: Reading a file and matching on regular expressions and subgroups:"
+        print("Example: Reading a file and matching on regular expressions and subgroups:")
         in_file = "/etc/issue"
         with open(in_file, 'r') as f:
             for line in f:
@@ -635,16 +638,16 @@ def main():
                 m = re.search("release *([0-9.]+)", line)
                 if m:
                     release_num = m.group(1)
-                    print "release_num == <{}>".format(release_num)
+                    print("release_num == <{}>".format(release_num))
 
-        print "Example: Reading a file and searching/replacing on a regular expression:"
+        print("Example: Reading a file and searching/replacing on a regular expression:")
         with open(in_file, 'r') as f:
             for line in f:
                 line = line.rstrip()
                 line = re.sub(r'release', '<REPLACEMENT>', line)
-                print line
+                print(line)
 
-        print "Example: Writing a file and searching/replacing on a regular expression"
+        print("Example: Writing a file and searching/replacing on a regular expression")
         that_file = "/tmp/somefile.for.pythonTemplate"
         queue = ["testing", "one", "two", "three"]
         with open(that_file, 'w') as f:
@@ -657,7 +660,7 @@ def main():
 
     if True:
         with time_print("something to do"):
-            print 'sleeping ...'
+            print('sleeping ...')
             time.sleep(1)
 
     # --------------------------------------------------------------------------------
@@ -667,9 +670,7 @@ def main():
     if True:
         # Formatting dictionary using lambda:
         line_style = {"fill": "none", "fill-capacity": 1}
-        print ";".join(map(
-            lambda (k, v): "{}:{}".format(k, str(v)),
-            line_style.iteritems()))
+        print(";".join(["{}:{}".format(k_v[0], str(k_v[1])) for k_v in iter(line_style.items())]))
 
     # --------------------------------------------------------------------------------
     # Try/except clauses:
@@ -678,16 +679,16 @@ def main():
     if True:
         try:
             raise argparse.ArgumentTypeError('{} was not set in the environment.'.format("THE_ENV_VAR"))
-        except argparse.ArgumentTypeError, e:
+        except argparse.ArgumentTypeError as e:
             # raise Exception, "%s [%d]" % (e.strerror, e.errno)
-            print "The exception {}".format(e)
+            print("The exception {}".format(e))
 
     # --------------------------------------------------------------------------------
     # Using cPickle:
     # --------------------------------------------------------------------------------
     if True:
         data1 = {'a': [1, 2.0, 3, 4 + 6j],
-                 'b': ('string', u'Unicode string'),
+                 'b': ('string', 'Unicode string'),
                  'c': None}
         selfref_list = [1, 2, 3]
         selfref_list.append(selfref_list)
@@ -741,3 +742,6 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(0 if main() else 1)  # Return non-zero exit codes upon failure
+
+# import pdb
+# pdb.set_trace()
