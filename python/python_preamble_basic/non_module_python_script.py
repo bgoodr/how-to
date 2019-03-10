@@ -297,6 +297,10 @@ def example_time_calculations():
 # but to do it their way which forces me to have to install pytz using
 # some installer, pip, virtualenvs. etc. which means that this file.
 #
+# I do see https://stackoverflow.com/a/36015213/257924 as one
+# solution, but this approach is pretty cumbersome, and shelling out
+# to the system just to do that is beyond my pain threshold.
+#
 # # Download and import pytz module:
 # import urllib.request
 # import urllib.error
