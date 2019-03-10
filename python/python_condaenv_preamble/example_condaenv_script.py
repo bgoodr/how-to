@@ -806,6 +806,8 @@ def main():
         except FileLineParseError as e:
             print("got error: {}".format(e))
 
+    return True
+
 
 if __name__ == '__main__':
     sys.exit(0 if main() else 1)  # Return non-zero exit codes upon failure
