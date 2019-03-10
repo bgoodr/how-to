@@ -1,8 +1,4 @@
 from bs4 import BeautifulSoup
-# Just print out the __dict__ but don't actually use it. This is just for example:
-print "BeautifulSoup.__dict__ {}".format(BeautifulSoup.__dict__)
-import sys
-print 'sys.path {}'.format(sys.path)
 
 # Tutorial: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
@@ -21,48 +17,48 @@ and they lived at the bottom of a well.</p>
 """
 
 
-from bs4 import BeautifulSoup
-soup = BeautifulSoup(html_doc, 'html.parser')
-print('----')
-print(soup.prettify())
-print('----')
-print(soup.title)
-print('----')
-print(soup.title.name)
-print('----')
-print(soup.title.string)
-print('----')
-print(soup.title.parent.name)
-print('----')
-print(soup.p)
-print('----')
-print(soup.p['class'])
-print('----')
-print(soup.a)
-print('----')
-print(soup.find_all('a'))
-print('----')
-print("<{}>".format(soup.find_all('a')[0]))
+def example_beautifulsoup():
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    print('----')
+    print(soup.prettify())
+    print('----')
+    print(soup.title)
+    print('----')
+    print(soup.title.name)
+    print('----')
+    print(soup.title.string)
+    print('----')
+    print(soup.title.parent.name)
+    print('----')
+    print(soup.p)
+    print('----')
+    print(soup.p['class'])
+    print('----')
+    print(soup.a)
+    print('----')
+    print(soup.find_all('a'))
+    print('----')
+    print("<{}>".format(soup.find_all('a')[0]))
 
-print('----')
-print(soup.find(id="link3"))
-print('----')
+    print('----')
+    print(soup.find(id="link3"))
+    print('----')
 
-for link in soup.find_all('a'):
-    print(link.get('href'))
+    for link in soup.find_all('a'):
+        print(link.get('href'))
 
-print(soup.get_text())
+    print(soup.get_text())
 
-# Tutorial: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-using-tag-names
+    # Tutorial: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-using-tag-names
 
-print('----')
-print(soup.head)
-print('----')
-print(soup.title)
-print('----')
-print('soup.body {}'.format(soup.body))
-print('----')
-print('soup.body.p {}'.format(soup.body.p))
-print('----')
-print('soup.body.b {}'.format(soup.body.b))
-print('----')
+    print('----')
+    print(soup.head)
+    print('----')
+    print(soup.title)
+    print('----')
+    print('soup.body {}'.format(soup.body))
+    print('----')
+    print('soup.body.p {}'.format(soup.body.p))
+    print('----')
+    print('soup.body.b {}'.format(soup.body.b))
+    print('----')
