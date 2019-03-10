@@ -8,4 +8,7 @@ export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20bs4%20import%20Beautif
 #
 #  PYTHON_CONDAENV_PREAMBLE_INSTALL=1 PYTHON_CONDAENV_PREAMBLE_VERBOSE=1 full_path_to_this_script
 #
+
+export PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=3
+
 exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
