@@ -493,7 +493,6 @@ def main():
     Main function
     """
     # Parse command-line arguments:
-    #    https://docs.python.org/2/howto/argparse.html
     parser = argparse.ArgumentParser(
         prog=os.path.basename(os.path.splitext(sys.argv[0])[0]),  # Avoid showing the .py file extension in the usage help
         description=description,
