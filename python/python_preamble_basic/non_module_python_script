@@ -5,4 +5,7 @@
 #   non_module_python_script.py file but it could be stored into some
 #   other ../ directory.
 #
+
+export PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION=3
+
 exec "$(dirname $0)/python_preamble_basic" "$0" "$@"

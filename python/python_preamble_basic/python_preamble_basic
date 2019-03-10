@@ -14,6 +14,9 @@ shift
 #    export PYTHONPATH="$(dirname $caller)/python:${PYTHONPATH}"
 #
 
+# Default the major version:
+export PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION=${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION:-2}
+
 # Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
 # is empty/not-set by default):
-exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
+exec /usr/bin/env python${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION} -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
