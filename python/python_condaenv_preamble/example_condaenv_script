@@ -10,5 +10,6 @@ export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20bs4%20import%20Beautif
 #
 
 export PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION=3
+export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20bs4%20import%20BeautifulSoup|conda|beautifulsoup4 import%20pytz|pip|pytz"
 
 exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
