@@ -298,8 +298,8 @@ if not os.path.isfile(tmpzip_path):
     lines = [line.decode().rstrip() for line in downloads_f]
     compressed_file = matchfirst(lines, r'<a href="(http[^"]*\.tar\.gz[^"]*)', 1)
     compressed_download_f = urllib.request.urlopen(compressed_file)
-    with open(tmpzip_path, "wb") as tmp_zip_f:
-        tmp_zip_f.write(compressed_download_f.read())
+    with open(tmpzip_path, "wb") as tmp_compressed_f:
+        tmp_compressed_f.write(compressed_download_f.read())
 if sys.path[0] != tmpzip_path:
     sys.path.insert(0, tmpzip_path)
     import pdb
