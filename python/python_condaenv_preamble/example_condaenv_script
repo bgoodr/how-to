@@ -6,6 +6,6 @@ export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20bs4%20import%20Beautif
 # unset to avoid 4 seconds of checking logic each time we invoke the
 # script:
 #
-#  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
-# 
+#  PYTHON_CONDAENV_PREAMBLE_INSTALL=1 PYTHON_CONDAENV_PREAMBLE_VERBOSE=1 full_path_to_this_script
+#
 exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
