@@ -180,6 +180,8 @@ def example_matchfirst():
 #   with time_print("processes"):
 #       [doproc() for _ in range(500)]
 #
+# But see also ./time_once.py for a better one that allows access to
+# the elapsed time. This rendition does not:
 @contextmanager
 def time_print(task_name):
     t = time.time()
