@@ -209,7 +209,7 @@ then
     #   dynamically via the PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES environment
     #   variable.
     #
-    env_existence=$(conda info --envs 2>/dev/null | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
+    env_existence=$(conda info --envs | grep "^$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV ")
     if [ -z "$env_existence" ]
     then
       ( # Scope for set_log
@@ -227,7 +227,7 @@ then
         #    - conda-env-2.6.0-1
         #
         # It is a mystery.
-        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root 2>/dev/null
+        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
 
         # I find it odd that even the above conda create still leaves us with this error:
         #
@@ -240,7 +240,7 @@ then
         #       $ conda update -n base -c defaults conda
         #
         # So then we will do that:
-        conda update -n base -c defaults conda 2>/dev/null
+        conda update -n base -c defaults conda
       )
       if [ $? != 0 ]
       then
@@ -325,7 +325,7 @@ then
           pip install --upgrade $package
         elif [ $installer = "conda" ]
         then
-          package_existence=$(conda list -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -f $package 2>/dev/null | grep -v '^#')
+          package_existence=$(conda list -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -f $package | grep -v '^#')
           if [ -z "$package_existence" ]
           then
             # Specify the channel when $channel is set:
@@ -336,9 +336,9 @@ then
             fi
 
             # Install the package:
-            conda install -y $channel_args -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package 2>/dev/null
+            conda install -y $channel_args -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           else
-            conda update -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package 2>/dev/null
+            conda update -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
           fi
         else
           echo "ERROR: Invalid installer: \"$installer\""
