@@ -38,3 +38,6 @@ class TimeOnce:
 
     def __str__(self):
         return str(self.dt)
+
+    def __float__(self):
+        return self.dt
