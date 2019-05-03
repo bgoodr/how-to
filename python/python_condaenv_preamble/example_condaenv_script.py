@@ -215,9 +215,9 @@ class Picklize:
 
     def __call__(self, *args):
         sha1 = hashlib.sha1()
-        sha1.update(str(args))
+        sha1.update(str(args).encode('UTF-8'))
         hash = sha1.hexdigest()
-        result_file = '/tmp/' + hash
+        result_file = '/tmp/picklized.' + hash + ".pkl"
         result = None
         if not os.path.exists(result_file):
             result = self.f(*args)
