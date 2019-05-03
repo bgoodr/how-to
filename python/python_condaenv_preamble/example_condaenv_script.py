@@ -221,10 +221,10 @@ class Picklize:
         result = None
         if not os.path.exists(result_file):
             result = self.f(*args)
-            with open(result_file, 'w') as f:
+            with open(result_file, 'wb') as f:
                 pickle.dump(result, f)
         else:
-            with open(result_file, 'r') as f:
+            with open(result_file, 'rb') as f:
                 result = pickle.load(f)
         return result
 
