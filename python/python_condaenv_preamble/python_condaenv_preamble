@@ -20,7 +20,8 @@
 #  PYTHON_CONDAENV_PREAMBLE_INSTALL -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
 #    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable. When set to
-#    install-only, just install.
+#    install-only, just install. when set to get-conda-install-dir, emit
+#    the path to the conda head directory.
 #
 #  PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
 #    installation output as it occurs. Otherwise, be silent about the
@@ -135,6 +136,14 @@ PYTHON_CONDAENV_PREAMBLE_CONDA_ENV=${PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:-envpyth
 
 # Arrange the miniconda installation directory to be release-specific just in case there is variation between releases as is typical:
 CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(lsb_release -sr).miniconda$PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION
+
+# Emit the conda installation directory upon request:
+if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-install-dir' ]
+then
+  echo $CONDA_INSTALL_DIR
+  exit 0
+fi
+
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
   if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
