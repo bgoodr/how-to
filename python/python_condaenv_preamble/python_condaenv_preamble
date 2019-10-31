@@ -42,7 +42,7 @@
 #    # script.:
 #    #
 #    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
-#    # 
+#    #
 #    exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
 #
 # Only when PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1, the above
@@ -55,7 +55,7 @@
 # Python statement to import the package:
 #
 #     $ python
-#     Python 2.7.12 (default, Jul  1 2016, 15:12:24) 
+#     Python 2.7.12 (default, Jul  1 2016, 15:12:24)
 #     [GCC 5.4.0 20160609] on linux2
 #     Type "help", "copyright", "credits" or "license" for more information.
 #     >>> import urllib
@@ -81,7 +81,7 @@
 #    # script:
 #    #
 #    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
-#    # 
+#    #
 #    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20apiclient.discovery%20import%20build|conda|google-api-python-client|conda-forge"
 #    . $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
 #
@@ -230,7 +230,7 @@ then
         # root is not needed but without it, the env directory is not
         # populated (missing the bin directory). Sigh. We do still
         # get this error:
-        # 
+        #
         #   The following packages cannot be cloned out of the root environment:
         #    - conda-4.5.12-py37_0
         #    - conda-env-2.6.0-1
@@ -243,9 +243,9 @@ then
         #   ==> WARNING: A newer version of conda exists. <==
         #     current version: 4.5.12
         #     latest version: 4.6.2
-        #  
+        #
         #   Please update conda by running
-        #  
+        #
         #       $ conda update -n base -c defaults conda
         #
         # So then we will do that:
@@ -292,7 +292,7 @@ then
   $SHELL "$@"
   exit $?
 fi
-   
+
 #
 # Optimization: Only do the package installation if
 # PYTHON_CONDAENV_PREAMBLE_INSTALL is set:
@@ -374,6 +374,28 @@ then
       fi
     fi
   done
+fi
+
+# Before execution, do any followup installation:
+#
+#   This is needed for some packages that do not update the conda
+#   env's "bin" directory to add required executables. An example of
+#   this (as of Thu May 30 10:31:01 PDT 2019) is:
+#
+#     conda install -n envpython3 -c conda-forge python-chromedriver-binary
+#
+#   where that package provides a chromedriver-path script to find the
+#   binary, which is great, but does not copy/link it that binary into
+#   the same directory where the python executable is.  So here we
+#   have to have a post-install step to allow wrapper scripts to
+#   change the PATH accordingly. So for that package, the wrapper
+#   script would do this:
+#
+#     export PYTHON_CONDAENV_PREAMBLE_POST_INSTALL='export PATH="$PATH:$(chromedriver-path)"'
+#
+if [ -n "$PYTHON_CONDAENV_PREAMBLE_POST_INSTALL" ]
+then
+  . "$PYTHON_CONDAENV_PREAMBLE_POST_INSTALL"
 fi
 
 #
