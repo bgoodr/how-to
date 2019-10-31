@@ -144,6 +144,13 @@ then
   exit 0
 fi
 
+# Emit the condaenv upon request:
+if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-env' ]
+then
+  echo $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
+  exit 0
+fi
+
 if [ ! -d $CONDA_INSTALL_DIR ]
 then
   if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
