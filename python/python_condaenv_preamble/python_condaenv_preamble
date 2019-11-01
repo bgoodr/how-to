@@ -20,8 +20,9 @@
 #  PYTHON_CONDAENV_PREAMBLE_INSTALL -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
 #    PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES variable. When set to
-#    install-only, just install. when set to get-conda-install-dir, emit
-#    the path to the conda head directory.
+#    install-only, just install. When set to "get-conda-install-dir",
+#    emit the path to the conda head directory. When set to
+#    "get-conda-env", emit the condaenv name.
 #
 #  PYTHON_CONDAENV_PREAMBLE_VERBOSE -- When set to 1, show the
 #    installation output as it occurs. Otherwise, be silent about the
@@ -161,6 +162,13 @@ CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-install-dir' ]
 then
   echo $CONDA_INSTALL_DIR
+  exit 0
+fi
+
+# Emit the condaenv upon request:
+if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-env' ]
+then
+  echo $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
   exit 0
 fi
 
