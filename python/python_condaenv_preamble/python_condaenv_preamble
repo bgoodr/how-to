@@ -15,7 +15,7 @@
 #    of the form "import_statement|installer|package_name|channel" that indicate
 #    what packages to install and which installer (pip, conda, etc.) to
 #    use. channel is specific to the conda install command (the -c option) that is
-#    needed for some packages, e.g:
+#    needed for some packages. See example below.
 #
 #  PYTHON_CONDAENV_PREAMBLE_INSTALL -- When set to 1, idempotently
 #    install the condaenv and the packages listed in the
@@ -43,7 +43,7 @@
 #    #
 #    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
 #    #
-#    exec "$(dirname $0)/python_condaenv_preamble" "$0" "$@"
+#    exec $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
 #
 # Only when PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1, the above
 # idempotently ensures that the packages specified by
@@ -83,8 +83,28 @@
 #    #  export PYTHON_CONDAENV_PREAMBLE_INSTALL=1
 #    #
 #    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20apiclient.discovery%20import%20build|conda|google-api-python-client|conda-forge"
-#    . $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
+#    exec $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
 #
+# Example 3:
+#
+#    Using a mixture of conda- and pip-based packages in the list with escaped new-lines:
+#
+#    #!/bin/bash
+#    # -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
+#
+#    # Only install conda, the env, and packages within the env, when
+#    # PYTHON_CONDAENV_PREAMBLE_INSTALL is set to 1. By default, leave it
+#    # unset to avoid 4 seconds of checking logic each time we invoke the
+#    # script:
+#    #
+#    #  PYTHON_CONDAENV_PREAMBLE_INSTALL=1 PYTHON_CONDAENV_PREAMBLE_VERBOSE=1 full_path_to_this_file
+#    #
+#    export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="\
+#    import%20networkx%20as%20nx|conda|networkx \
+#    import%20magic|pip|python-magic \
+#    "
+#
+#    exec $(dirname $0)/../../bgoodr/how-to/python/python_condaenv_preamble/python_condaenv_preamble "$0" "$@"
 
 # ================================================================================
 # Instead of having all wrapper scripts do the following:
@@ -141,13 +161,6 @@ CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-install-dir' ]
 then
   echo $CONDA_INSTALL_DIR
-  exit 0
-fi
-
-# Emit the condaenv upon request:
-if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-env' ]
-then
-  echo $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
   exit 0
 fi
 
