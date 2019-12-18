@@ -729,6 +729,17 @@ def scrub(args):
         except FileLineParseError as e:
             print("got error: {}".format(e))
 
+    # Reading from arguments that are either "-" (standard-input) or files
+    #
+    #   Refer to the answers to https://stackoverflow.com/q/59381035/257924
+    #
+    if True:
+        with args.paths_from as f:
+            # Read all lines from the file, excluding the false path
+            # at the end of the file and any blank lines:
+            paths = [path for path in f.read().split('\n') if path]
+            print("paths", paths)
+
     return True
 
 
@@ -746,6 +757,12 @@ Multi-line description goes here.
 def main():
     """
     Main function
+
+    Example commands:
+
+      (echo "foo"; echo "bar"; echo "baz") >/tmp/stuff | example_condaenv_script scrub -p /tmp/stuff -d /tmp/ something
+      (echo "foo"; echo "bar") | /home/brentg/bgoodr/how-to/python/python_condaenv_preamble/example_condaenv_script scrub -p - -d /tmp/ something
+
     """
     # Parse command-line arguments:
     parser = argparse.ArgumentParser(
@@ -805,6 +822,11 @@ def main():
     # (http://stackoverflow.com/a/5271692/257924):
     parser_scrub.add_argument("-v", "--verbose", help="increase output verbosity",
                               action="store_true")
+
+    # An argument that accepts either a file path, or '-' to mean standard input:
+    parser_scrub.add_argument('-p', '--paths-from', type=argparse.FileType('r'),
+                              help='Path to a file containing paths to scan, one path per line. '
+                              'A "-" is accepted here to mean to read the list of paths from standard-input.')
 
     # Parse the args and call whatever function was selected:
     args = parser.parse_args(sys.argv[1:])
