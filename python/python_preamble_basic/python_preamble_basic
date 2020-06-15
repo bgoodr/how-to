@@ -24,7 +24,7 @@ shift
 #   a _different_ PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION value without
 #   interference from the parent processes.
 #
-python_version=${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION:-2}
+python_version=${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION:-3}
 unset PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION
 
 # Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
