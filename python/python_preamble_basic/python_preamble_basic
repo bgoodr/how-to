@@ -15,8 +15,18 @@ shift
 #
 
 # Default the major version:
-export PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION=${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION:-2}
+#
+#   Save off PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION into a temporary
+#   variable.  Then unset the original
+#   PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION variable.  Then, if/when this
+#   script executes child processes that, in turn, reuse this same
+#   python_preamble_basic script, those child processes can opt to use
+#   a _different_ PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION value without
+#   interference from the parent processes.
+#
+python_version=${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION:-2}
+unset PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION
 
 # Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
 # is empty/not-set by default):
-exec /usr/bin/env python${PYTHON_PREAMBLE_PYTHON_MAJOR_VERSION} -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
+exec /usr/bin/env python${python_version} -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
