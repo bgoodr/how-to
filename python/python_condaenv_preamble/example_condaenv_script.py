@@ -850,13 +850,3 @@ if __name__ == '__main__':
 
 # How to run the debugger at a particular area of code:
 # import pdb; pdb.set_trace()
-
-import traceback
-
-def foo():
-    print("aaa")
-    import traceback; traceback.print_stack()
-    #traceback.print_exc(file=sys.stdout)
-    print("bbb")
-
-foo()
