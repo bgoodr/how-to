@@ -16,6 +16,8 @@ import hashlib
 import pytz
 from bs4 import BeautifulSoup
 
+# How to print a stacktrace to stdout:
+#     import traceback; traceback.print_stack()
 
 def example_beautifulsoup():
     html_doc = """
@@ -848,3 +850,13 @@ if __name__ == '__main__':
 
 # How to run the debugger at a particular area of code:
 # import pdb; pdb.set_trace()
+
+import traceback
+
+def foo():
+    print("aaa")
+    import traceback; traceback.print_stack()
+    #traceback.print_exc(file=sys.stdout)
+    print("bbb")
+
+foo()
