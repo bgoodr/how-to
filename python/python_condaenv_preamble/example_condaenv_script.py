@@ -214,12 +214,19 @@ class Picklize:
 
     def __init__(self, f):
         self.f = f
+        # Change self.debug to True to see the file to remove it to force it to be regenerated:
+        self.debug = False
 
     def __call__(self, *args):
         sha1 = hashlib.sha1()
+        # Include the name of the calling function to disambiguate this call from other functions that have the same args:
+        sha1.update(self.f.__qualname__.encode('UTF-8'))
+        # Hash the args:
         sha1.update(str(args).encode('UTF-8'))
         hash = sha1.hexdigest()
         result_file = '/tmp/picklized.' + hash + ".pkl"
+        if self.debug:
+            print("self.f.__qualname__", self.f.__qualname__, "result_file", result_file)
         result = None
         if not os.path.exists(result_file):
             result = self.f(*args)
