@@ -749,7 +749,23 @@ def scrub(args):
             paths = [path for path in f.read().split('\n') if path]
             print("paths", paths)
 
+    if True:
+        helpw("help")
+
     return True
+
+
+def helpw(obj):
+    """Return what help(obj) would return without a pager.
+
+    Useful for interactive python use. Try it on a long class e.g. a huge class in Pandas:
+
+    print(helpw(pd.core.indexes.base.Index))
+
+    Reference https://stackoverflow.com/a/61938986/257924
+    """
+    import pydoc
+    return pydoc.render_doc(obj)
 
 
 description = r"""
