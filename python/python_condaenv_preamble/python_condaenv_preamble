@@ -125,7 +125,7 @@ set_log ()
   log="$1"
   if [ "$PYTHON_CONDAENV_PREAMBLE_VERBOSE" != 1 ]
   then
-    exec &> $log
+    exec &> "$log"
   fi
 }
 
@@ -161,18 +161,18 @@ CONDA_INSTALL_DIR=$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$(lsb_release -si).$(
 # Emit the conda installation directory upon request:
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-install-dir' ]
 then
-  echo $CONDA_INSTALL_DIR
+  echo "$CONDA_INSTALL_DIR"
   exit 0
 fi
 
 # Emit the condaenv upon request:
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = 'get-conda-env' ]
 then
-  echo $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
+  echo "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
   exit 0
 fi
 
-if [ ! -d $CONDA_INSTALL_DIR ]
+if [ ! -d "$CONDA_INSTALL_DIR" ]
 then
   if [ -z "$PYTHON_CONDAENV_PREAMBLE_INSTALL" ]
   then
@@ -180,7 +180,7 @@ then
     exit 1
   fi
 
-  if ! mkdir -p $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
+  if ! mkdir -p "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR"
   then
     echo "ERROR: Cannot create $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR a directory."
     exit 1
@@ -188,37 +188,33 @@ then
 
   # This name of installer may need to be fiddled with for Mac but this works for Linux:
   installer=Miniconda${PYTHON_CONDAENV_PREAMBLE_CONDA_PYTHON_VERSION}-latest-$(uname -s)-$(uname -m).sh
-  if [ ! -f $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer ]
+  if [ ! -f "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer" ]
   then
     ( # Scope for set_log
-      set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
+      set_log "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log"
       set -x -e
-      cd $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
-      wget https://repo.continuum.io/miniconda/$installer
-    )
-    if [ $? != 0 ]
-    then
+      cd "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR"
+      wget "https://repo.continuum.io/miniconda/$installer"
+    ) || {
       cat_log
       echo
       echo "ERROR: Failed to download root conda environment. See above output for errors."
       exit 1
-    fi
+    }
   fi
 
   # Execute the installer:
   ( # Scope for set_log
-    set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log
+    set_log "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/$installer.log"
     set -x -e
-    cd $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR
-    bash ./$installer -b -p $CONDA_INSTALL_DIR
-  )
-  if [ $? != 0 ]
-  then
+    cd "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR"
+    bash "./$installer" -b -p "$CONDA_INSTALL_DIR"
+  ) || {
     cat_log
     echo
     echo "ERROR: Failed to install root conda environment. See above output for errors."
     exit 1
-  fi
+  }
 fi
 
 #
@@ -236,7 +232,8 @@ then
     #   pip that is under the conda-env where the python lives. If that
     #   happens, then it messes the installation up in very weird ways.
     #
-    export PATH=$CONDA_INSTALL_DIR/bin:$PATH
+    # shellcheck disable=SC2030
+    export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
 
     #
     # Build the environment given by PYTHON_CONDAENV_PREAMBLE_CONDA_ENV:
@@ -250,9 +247,9 @@ then
     if [ -z "$env_existence" ]
     then
       ( # Scope for set_log
-        set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log
+        set_log "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/conda_create_env.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log"
         set -x -e
-        cd $CONDA_INSTALL_DIR
+        cd "$CONDA_INSTALL_DIR"
 
         # https://stackoverflow.com/a/49404515/257924 says --clone
         # root is not needed but without it, the env directory is not
@@ -264,7 +261,7 @@ then
         #    - conda-env-2.6.0-1
         #
         # It is a mystery.
-        conda create --name $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV --clone root
+        conda create --name "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV" --clone root
 
         # I find it odd that even the above conda create still leaves us with this error:
         #
@@ -278,14 +275,12 @@ then
         #
         # So then we will do that:
         conda update -n base -c defaults conda
-      )
-      if [ $? != 0 ]
-      then
+      ) || {
         cat_log
         echo
         echo "ERROR: Failed to create condaenv: $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
         exit 1
-      fi
+      }
     fi
   )
 fi
@@ -293,12 +288,10 @@ fi
 #
 # Activate the condaenv:
 #
-source $CONDA_INSTALL_DIR/bin/activate $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV
-if [ $? != 0 ]
-then
+source "$CONDA_INSTALL_DIR/bin/activate" "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV" || {
   echo "ERROR: Could not activate condaenv $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV"
   exit 1
-fi
+}
 
 #
 # Allow executing a subshell that has conda in the PATH:
@@ -308,7 +301,8 @@ fi
 #
 if [ "$PYTHON_CONDAENV_PREAMBLE_INSTALL" = "with-conda" ]
 then
-  export PATH=$CONDA_INSTALL_DIR/bin:$PATH
+  # shellcheck disable=SC2031
+  export PATH="$CONDA_INSTALL_DIR/bin:$PATH"
   # Warning if you pass this the same script into $@ it will recurse.
   #
   # Example:
@@ -336,8 +330,8 @@ then
     # Split on vertical bar:
     #
     unset import_package_statement installer package channel
-    eval $(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; installer=\"%s\"; package=\"%s\"; channel=\"%s\"\n", $1, $2, $3, $4); }')
-    if [ -z "$import_package_statement" -o -z "$installer" -o -z "$package" ]
+    eval "$(echo "$package_tuple" | awk -F\| '{ printf ("import_package_statement=\"%s\"; installer=\"%s\"; package=\"%s\"; channel=\"%s\"\n", $1, $2, $3, $4); }')"
+    if [ -z "$import_package_statement" ] || [ -z "$installer" ] || [ -z "$package" ]
     then
       echo "ERROR: PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES should be of the form \"import_package_statement1|installer1|package1 import_package_statement2|installer2|package2 ...\""
       exit 1
@@ -351,18 +345,18 @@ then
       :
     else
       ( # Scope for set_log
-        set_log $PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log.$$
-        if [ $installer = "pip" ]
+        set_log "$PYTHON_CONDAENV_PREAMBLE_CONDA_HEAD_DIR/install_package.$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV.log.$$"
+        if [ "$installer" = "pip" ]
         then
 
           # Always upgrade pip on the fly prior to using pip to upgrade the $package:
           pip install --upgrade pip
 
           # Upgrade the package (which includes installing if it has not yet been installed):
-          pip install --upgrade $package
-        elif [ $installer = "conda" ]
+          pip install --upgrade "$package"
+        elif [ "$installer" = "conda" ]
         then
-          package_existence=$(conda list -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV -f $package | grep -v '^#')
+          package_existence=$(conda list -n "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV" -f "$package" | grep -v '^#')
           if [ -z "$package_existence" ]
           then
             # Specify the channel when $channel is set:
@@ -373,22 +367,20 @@ then
             fi
 
             # Install the package:
-            conda install -y $channel_args -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
+            conda install -y "$channel_args" -n "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV" "$package"
           else
-            conda update -y -n $PYTHON_CONDAENV_PREAMBLE_CONDA_ENV $package
+            conda update -y -n "$PYTHON_CONDAENV_PREAMBLE_CONDA_ENV" "$package"
           fi
         else
           echo "ERROR: Invalid installer: \"$installer\""
           exit 1
         fi
-      )
-      if [ $? != 0 ]
-      then
+      ) || {
         cat_log
         echo
         echo "ERROR: Install of package $package failed. See above."
         exit 1
-      fi
+      }
 
       if python -c "$exec_statement"
       then
@@ -423,6 +415,7 @@ fi
 #
 if [ -n "$PYTHON_CONDAENV_PREAMBLE_POST_INSTALL" ]
 then
+  # shellcheck disable=SC1090
   . "$PYTHON_CONDAENV_PREAMBLE_POST_INSTALL"
 fi
 
@@ -446,5 +439,6 @@ then
 
   # Allow pdb execution by using PYTHON_PREAMBLE_EXTRA_ARGS here (which
   # is empty/not-set by default):
+  # shellcheck disable=SC2086
   exec /usr/bin/env python -u ${PYTHON_PREAMBLE_EXTRA_ARGS} "${caller}.py" "$@"
 fi
