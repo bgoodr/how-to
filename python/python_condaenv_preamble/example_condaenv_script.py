@@ -532,6 +532,7 @@ def scrub(args):
     print('Left aligned example:  x{0:<20}x'.format('foo'))
     print('Right aligned example: x{0:>20}x'.format('foo'))
     print('Floating point format: {:.6f}'.format(12.1234))
+    print('Zero-padded example:   {:0>5}'.format(23))
 
     # Dump out environment in a form that can be source into Bash(-compatible) scripts:
     #
