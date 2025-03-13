@@ -1,6 +1,13 @@
 python_condaenv_preamble
 ========================
 
+WARNING: Do not use this anymore at all. This was built before
+Anaconda decided to bait-and-switch us all by changing their license
+to require purchasing. Do not use it even for personal work because
+eventually you will make the mistake of forgetting about that bait and
+switch tactic, and then your usage will leak back into contexts that
+are in violation of their license.
+
 [Parent README](../README.md)
 
 Files:

@@ -1,3 +1,6 @@
+print("$0:$LINENO: ERROR: Do not use this anymore; See explanation in the README.md file")
+sys.exit(1)
+
 import os
 import sys
 import argparse

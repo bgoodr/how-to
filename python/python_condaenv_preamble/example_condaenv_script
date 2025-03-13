@@ -1,4 +1,8 @@
 #!/bin/bash
+
+echo "$0:$LINENO: ERROR: Do not use this anymore; See explanation in the README.md file"
+exit 1
+
 # -*-mode: Shell-script; indent-tabs-mode: nil; sh-basic-offset: 2 -*-
 export PYTHON_CONDAENV_PREAMBLE_REQUIRED_PACKAGES="from%20bs4%20import%20BeautifulSoup|conda|beautifulsoup4"
 # Only install conda, the env, and packages within the env, when

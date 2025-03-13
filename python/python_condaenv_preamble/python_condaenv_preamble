@@ -119,6 +119,9 @@
 # located in various subdirectories:
 # ================================================================================
 
+echo "$0:$LINENO: ERROR: Do not use this anymore; See explanation in the README.md file"
+exit 1
+
 log=""
 set_log ()
 {
